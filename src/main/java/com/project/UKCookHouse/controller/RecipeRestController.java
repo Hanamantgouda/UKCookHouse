@@ -32,11 +32,9 @@ public class RecipeRestController {
                 recipe.put("image_url", rs.getString("recipe_image"));
                 recipes.add(recipe);
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return recipes;
     }
 }

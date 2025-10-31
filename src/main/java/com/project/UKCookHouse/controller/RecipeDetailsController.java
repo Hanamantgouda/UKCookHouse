@@ -1,10 +1,6 @@
 package com.project.UKCookHouse.controller;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import java.sql.*;
 import java.util.*;
 
@@ -21,8 +17,8 @@ public class RecipeDetailsController {
         Map<String, Object> recipeData = new HashMap<>();
 
         String recipeQuery = "SELECT * FROM recipes WHERE recipe_name = ? OR recipe_name_kn = ?";
-        String stepsQuery = "SELECT step_number, step, step_number_kn, step_kn " +
-                "FROM recipe_steps WHERE r_s_id = ? ORDER BY step_number";
+        String stepsQuery = "SELECT step_number, step, step_number_kn, step_kn FROM recipe_steps WHERE r_s_id = ? ORDER BY step_number";
+        String ingredientsQuery = "SELECT ing_name FROM recipe_ingredients WHERE r_i_id = ?";
 
         try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
              PreparedStatement recipeStmt = con.prepareStatement(recipeQuery)) {
@@ -52,7 +48,7 @@ public class RecipeDetailsController {
                 recipeData.put("difficulty_level", rs.getString("difficulty_level"));
                 recipeData.put("famous_place", rs.getString("famous_place"));
 
-                // Fetch recipe steps
+                // ✅ Fetch recipe steps
                 List<Map<String, Object>> steps = new ArrayList<>();
                 try (PreparedStatement stepsStmt = con.prepareStatement(stepsQuery)) {
                     stepsStmt.setInt(1, recipeId);
@@ -66,8 +62,18 @@ public class RecipeDetailsController {
                         steps.add(step);
                     }
                 }
-
                 recipeData.put("steps", steps);
+
+                // ✅ Fetch recipe ingredients
+                List<String> ingredients = new ArrayList<>();
+                try (PreparedStatement ingStmt = con.prepareStatement(ingredientsQuery)) {
+                    ingStmt.setInt(1, recipeId);
+                    ResultSet ingRs = ingStmt.executeQuery();
+                    while (ingRs.next()) {
+                        ingredients.add(ingRs.getString("ing_name"));
+                    }
+                }
+                recipeData.put("ingredients", ingredients);
 
             } else {
                 recipeData.put("error", "Recipe not found");
