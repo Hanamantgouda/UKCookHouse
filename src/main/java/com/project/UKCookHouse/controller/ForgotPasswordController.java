@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.*;
-import jakarta.mail.internet.MimeMessage; // ✅ use jakarta for Spring Boot 3+
+import jakarta.mail.internet.MimeMessage; //
 
 import java.util.HashMap;
 import java.util.Map;

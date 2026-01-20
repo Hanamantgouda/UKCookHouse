@@ -12,10 +12,6 @@ public class RatingFetchController {
     private final String USERNAME = "postgres";
     private final String PASSWORD = "postgres";
 
-    /**
-     * Endpoint: /getRecipeRating?recipeId=5
-     * Returns average rating and total number of ratings for the given recipe.
-     */
     @GetMapping("/getRecipeRating")
     public Map<String, Object> getRecipeRating(@RequestParam int recipeId) {
         Map<String, Object> response = new HashMap<>();

@@ -62,7 +62,7 @@ public class RecipeMatchController {
                         "       ROUND((matched_count * 100.0 / NULLIF(total_ingredients, 0)), 2) AS match_percentage " +
                         "FROM recipe_stats " +
                         "WHERE matched_count >= 1 " +
-                        "  AND (total_ingredients - matched_count) = 1 " +
+                        "  AND (total_ingredients - matched_count) <= 2 " +
                         "  AND NOT (matched_count = 1 AND total_ingredients > 2) " +
                         "ORDER BY match_percentage DESC;";
 

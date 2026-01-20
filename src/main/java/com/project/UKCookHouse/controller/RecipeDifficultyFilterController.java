@@ -12,10 +12,6 @@ public class RecipeDifficultyFilterController {
     private final String USERNAME = "postgres";
     private final String PASSWORD = "postgres";
 
-    /**
-     * API Endpoint: /recipesByDifficulty
-     * Example: /recipesByDifficulty?level=Easy
-     */
     @GetMapping("/recipesByDifficulty")
     public List<Map<String, Object>> getRecipesByDifficulty(@RequestParam String level) {
         List<Map<String, Object>> recipeList = new ArrayList<>();
