@@ -1,5 +1,6 @@
 package com.project.UKCookHouse.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import java.sql.*;
 import java.util.*;
@@ -8,21 +9,15 @@ import java.util.*;
 @CrossOrigin(origins = "*")
 public class RatingSaveController {
 
-    private final String URL = "jdbc:postgresql://localhost:5432/UK_COOK_HOUSE";
-    private final String USERNAME = "postgres";
-    private final String PASSWORD = "postgres";
+    @Value("${spring.datasource.url}")
+    private String dbUrl;
 
-    /**
-     * Endpoint: POST /saveRating
-     * Stores or updates a user's rating for a recipe.
-     *
-     * Example JSON body:
-     * {
-     *   "u_id": 1,
-     *   "r_id": 5,
-     *   "rating": 4
-     * }
-     */
+    @Value("${spring.datasource.username}")
+    private String dbUsername;
+
+    @Value("${spring.datasource.password}")
+    private String dbPassword;
+
     @PostMapping("/saveRating")
     public Map<String, Object> saveRating(@RequestBody Map<String, Object> request) {
         Map<String, Object> response = new HashMap<>();
@@ -38,7 +33,7 @@ public class RatingSaveController {
             DO UPDATE SET rating = EXCLUDED.rating;
         """;
 
-        try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
              PreparedStatement ps = con.prepareStatement(insertOrUpdateQuery)) {
 
             ps.setInt(1, userId);

@@ -1,10 +1,11 @@
 package com.project.UKCookHouse.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.*;
-import jakarta.mail.internet.MimeMessage; //
+import jakarta.mail.internet.MimeMessage;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +17,9 @@ public class ForgotPasswordController {
 
     @Autowired
     private JavaMailSender mailSender;
+
+    @Value("${spring.mail.username}")
+    private String fromEmail;
 
     @PostMapping("/send-otp")
     public Map<String, Object> sendOtpEmail(@RequestBody Map<String, String> requestData) {
@@ -31,7 +35,7 @@ public class ForgotPasswordController {
                 return response;
             }
 
-            String subject = "🔐 Your UK Cook House Password Reset OTP";
+            String subject = "UK Cook House Password Reset OTP";
             String htmlBody = """
 <html>
   <body style='font-family: Poppins, sans-serif; background-color: #fdf6f2; padding: 20px; margin: 0;'>
@@ -68,7 +72,7 @@ public class ForgotPasswordController {
             helper.setTo(email);
             helper.setSubject(subject);
             helper.setText(htmlBody, true);
-            helper.setFrom("yourgmail@gmail.com");
+            helper.setFrom(fromEmail);
 
             mailSender.send(message);
 

@@ -1,5 +1,6 @@
 package com.project.UKCookHouse.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import java.sql.*;
 import java.util.*;
@@ -8,9 +9,14 @@ import java.util.*;
 @CrossOrigin(origins = "*")
 public class RecipeDifficultyFilterController {
 
-    private final String URL = "jdbc:postgresql://localhost:5432/UK_COOK_HOUSE";
-    private final String USERNAME = "postgres";
-    private final String PASSWORD = "postgres";
+    @Value("${spring.datasource.url}")
+    private String dbUrl;
+
+    @Value("${spring.datasource.username}")
+    private String dbUsername;
+
+    @Value("${spring.datasource.password}")
+    private String dbPassword;
 
     @GetMapping("/recipesByDifficulty")
     public List<Map<String, Object>> getRecipesByDifficulty(@RequestParam String level) {
@@ -21,7 +27,7 @@ public class RecipeDifficultyFilterController {
                 "FROM recipes WHERE LOWER(difficulty_level) = LOWER(?) " +
                 "ORDER BY cooking_time ASC";
 
-        try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
              PreparedStatement stmt = con.prepareStatement(query)) {
 
             stmt.setString(1, level);

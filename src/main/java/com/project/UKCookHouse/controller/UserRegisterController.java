@@ -1,5 +1,6 @@
 package com.project.UKCookHouse.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,10 +11,14 @@ import java.util.*;
 @RequestMapping("/api")
 @CrossOrigin(origins = "*")
 public class UserRegisterController {
+    @Value("${spring.datasource.url}")
+    private String dbUrl;
 
-    private static final String DB_URL = "jdbc:postgresql://localhost:5432/UK_COOK_HOUSE";
-    private static final String DB_USERNAME = "postgres";
-    private static final String DB_PASSWORD = "postgres";
+    @Value("${spring.datasource.username}")
+    private String dbUsername;
+
+    @Value("${spring.datasource.password}")
+    private String dbPassword;
 
     @PostMapping("/register")
     public Map<String, Object> registerUser(@RequestBody Map<String, String> userData) {
@@ -29,7 +34,7 @@ public class UserRegisterController {
             return response;
         }
 
-        try (Connection con = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
             // Check if email already exists
             String checkQuery = "SELECT COUNT(*) FROM users WHERE email = ?";
             try (PreparedStatement checkStmt = con.prepareStatement(checkQuery)) {

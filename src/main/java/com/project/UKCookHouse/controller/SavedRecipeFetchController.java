@@ -1,5 +1,6 @@
 package com.project.UKCookHouse.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import java.sql.*;
 import java.util.*;
@@ -8,14 +9,15 @@ import java.util.*;
 @CrossOrigin(origins = "*")
 public class SavedRecipeFetchController {
 
-    private final String URL = "jdbc:postgresql://localhost:5432/UK_COOK_HOUSE";
-    private final String USERNAME = "postgres";
-    private final String PASSWORD = "postgres";
+    @Value("${spring.datasource.url}")
+    private String dbUrl;
 
-    /**
-     * Endpoint: /savedRecipes?userId=1
-     * Returns all recipes saved by the user.
-     */
+    @Value("${spring.datasource.username}")
+    private String dbUsername;
+
+    @Value("${spring.datasource.password}")
+    private String dbPassword;
+
     @GetMapping("/savedRecipes")
     public List<Map<String, Object>> getSavedRecipes(@RequestParam int userId) {
         List<Map<String, Object>> savedRecipes = new ArrayList<>();
@@ -29,7 +31,7 @@ public class SavedRecipeFetchController {
             ORDER BY r.recipe_name;
         """;
 
-        try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
              PreparedStatement ps = con.prepareStatement(query)) {
 
             ps.setInt(1, userId);

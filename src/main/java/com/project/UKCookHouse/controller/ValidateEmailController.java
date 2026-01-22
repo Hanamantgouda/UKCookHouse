@@ -1,5 +1,6 @@
 package com.project.UKCookHouse.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.*;
@@ -9,10 +10,14 @@ import java.util.*;
 @RequestMapping("/api")
 @CrossOrigin(origins = "*")
 public class ValidateEmailController {
+    @Value("${spring.datasource.url}")
+    private String dbUrl;
 
-    private static final String DB_URL = "jdbc:postgresql://localhost:5432/UK_COOK_HOUSE";
-    private static final String DB_USERNAME = "postgres";
-    private static final String DB_PASSWORD = "postgres";
+    @Value("${spring.datasource.username}")
+    private String dbUsername;
+
+    @Value("${spring.datasource.password}")
+    private String dbPassword;
 
     @PostMapping("/validate-email")
     public Map<String, Object> validateEmail(@RequestBody Map<String, String> requestData) {
@@ -30,7 +35,7 @@ public class ValidateEmailController {
 
         String query = "SELECT user_id, username, email FROM users WHERE email = ?";
 
-        try (Connection con = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
              PreparedStatement ps = con.prepareStatement(query)) {
 
             ps.setString(1, email);

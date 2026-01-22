@@ -1,5 +1,6 @@
 package com.project.UKCookHouse.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import java.sql.*;
 import java.util.*;
@@ -7,9 +8,14 @@ import java.util.*;
 @RestController
 public class RecipeMatchController {
 
-    private final String url = "jdbc:postgresql://localhost:5432/UK_COOK_HOUSE";
-    private final String username = "postgres";
-    private final String password = "postgres";
+    @Value("${spring.datasource.url}")
+    private String dbUrl;
+
+    @Value("${spring.datasource.username}")
+    private String dbUsername;
+
+    @Value("${spring.datasource.password}")
+    private String dbPassword;
 
     @CrossOrigin(origins = "*")
     @PostMapping("/recipes/search")
@@ -21,7 +27,7 @@ public class RecipeMatchController {
 
         if (ingredients == null || ingredients.isEmpty()) return result;
 
-        // ✅ Build comma-separated ingredient list for exact match query only
+        // Build comma-separated ingredient list for exact match query only
         StringBuilder arrayBuilder = new StringBuilder();
         for (int i = 0; i < ingredients.size(); i++) {
             arrayBuilder.append("'").append(ingredients.get(i).toLowerCase().trim().replace("'", "''")).append("'");
@@ -29,7 +35,7 @@ public class RecipeMatchController {
         }
         String ingredientArray = arrayBuilder.toString();
 
-        // ✅ Exact Match Query
+        // Exact Match Query
         String exactQuery =
                 "WITH selected AS ( " +
                         "    SELECT unnest(ARRAY[" + ingredientArray + "]::text[]) AS ing_name " +
@@ -41,7 +47,7 @@ public class RecipeMatchController {
                         "HAVING ARRAY_AGG(DISTINCT lower(trim(ri.ing_name))) <@ (SELECT ARRAY_AGG(lower(trim(ing_name))) FROM selected) " +
                         "   AND COUNT(DISTINCT ri.ing_name) = (SELECT COUNT(*) FROM selected);";
 
-        // ✅ Partial Match Query (Only one missing ingredient)
+        // Partial Match Query (Only one missing ingredient)
         String partialQuery =
                 "WITH selected AS ( " +
                         "    SELECT lower(trim(unnest(?::text[]))) AS sel_ing " +
@@ -66,17 +72,17 @@ public class RecipeMatchController {
                         "  AND NOT (matched_count = 1 AND total_ingredients > 2) " +
                         "ORDER BY match_percentage DESC;";
 
-        try (Connection con = DriverManager.getConnection(url, username, password);
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
              Statement stExact = con.createStatement();
              ResultSet rsExact = stExact.executeQuery(exactQuery);
              PreparedStatement psPartial = con.prepareStatement(partialQuery)) {
 
-            // ✅ Set the PostgreSQL array parameter for partial query
+            // Set the PostgreSQL array parameter for partial query
             Array sqlArray = con.createArrayOf("text", ingredients.toArray());
             psPartial.setArray(1, sqlArray);
             ResultSet rsPartial = psPartial.executeQuery();
 
-            // ✅ Exact matches
+            // Exact matches
             while (rsExact.next()) {
                 Map<String, Object> recipe = new HashMap<>();
                 recipe.put("name", rsExact.getString("recipe_name"));
@@ -85,7 +91,7 @@ public class RecipeMatchController {
                 exactMatches.add(recipe);
             }
 
-            // ✅ Partial matches (only one missing)
+            // Partial matches (only one missing)
             while (rsPartial.next()) {
                 Map<String, Object> recipe = new HashMap<>();
                 recipe.put("name", rsPartial.getString("recipe_name"));

@@ -1,5 +1,6 @@
 package com.project.UKCookHouse.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,9 +12,14 @@ import java.util.*;
 @CrossOrigin(origins = "*")
 public class UserLoginController {
 
-    private static final String DB_URL = "jdbc:postgresql://localhost:5432/UK_COOK_HOUSE";
-    private static final String DB_USERNAME = "postgres";
-    private static final String DB_PASSWORD = "postgres";
+    @Value("${spring.datasource.url}")
+    private String dbUrl;
+
+    @Value("${spring.datasource.username}")
+    private String dbUsername;
+
+    @Value("${spring.datasource.password}")
+    private String dbPassword;
 
     @PostMapping("/login")
     public Map<String, Object> loginUser(@RequestBody Map<String, String> userData) {
@@ -31,7 +37,7 @@ public class UserLoginController {
 
         String query = "SELECT user_id, username, email, password FROM users WHERE email = ?";
 
-        try (Connection con = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
              PreparedStatement ps = con.prepareStatement(query)) {
 
             ps.setString(1, email);

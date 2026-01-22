@@ -1,5 +1,6 @@
 package com.project.UKCookHouse.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import java.sql.*;
 import java.util.*;
@@ -7,19 +8,14 @@ import java.util.*;
 @RestController
 @CrossOrigin(origins = "*")
 public class testController {
+    @Value("${spring.datasource.url}")
+    private String dbUrl;
 
-    private final String URL = "jdbc:postgresql://localhost:5432/UK_COOK_HOUSE";
-    private final String USERNAME = "postgres";
-    private final String PASSWORD = "postgres";
+    @Value("${spring.datasource.username}")
+    private String dbUsername;
 
-    /**
-     * Endpoint: /getRecipesByIngredients
-     * Example Request:
-     *   POST /getRecipesByIngredients
-     *   Body: { "ingredients": ["rice", "onion", "turmeric powder", "cumin"] }
-     *
-     * Returns recipes that match at least 70% of the user-selected ingredients.
-     */
+    @Value("${spring.datasource.password}")
+    private String dbPassword;
     @PostMapping("/search")
     public List<Map<String, Object>> getRecipesByIngredients(@RequestBody Map<String, Object> requestBody) {
         List<Map<String, Object>> recipes = new ArrayList<>();
@@ -57,7 +53,7 @@ public class testController {
 
 
 
-        try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
              PreparedStatement ps = con.prepareStatement(query)) {
 
             // Convert ingredient list to SQL array

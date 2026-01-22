@@ -1,5 +1,6 @@
 package com.project.UKCookHouse.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import java.sql.*;
 import java.util.*;
@@ -7,9 +8,14 @@ import java.util.*;
 @RestController
 public class RecipeDetailsController {
 
-    private final String URL = "jdbc:postgresql://localhost:5432/UK_COOK_HOUSE";
-    private final String USERNAME = "postgres";
-    private final String PASSWORD = "postgres";
+    @Value("${spring.datasource.url}")
+    private String dbUrl;
+
+    @Value("${spring.datasource.username}")
+    private String dbUsername;
+
+    @Value("${spring.datasource.password}")
+    private String dbPassword;
 
     @CrossOrigin(origins = "*")
     @GetMapping("/recipe")
@@ -20,7 +26,7 @@ public class RecipeDetailsController {
         String stepsQuery = "SELECT step_number, step, step_number_kn, step_kn FROM recipe_steps WHERE r_s_id = ? ORDER BY step_number";
         String ingredientsQuery = "SELECT ing_name FROM recipe_ingredients WHERE r_i_id = ?";
 
-        try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
              PreparedStatement recipeStmt = con.prepareStatement(recipeQuery)) {
 
             recipeStmt.setString(1, name);
@@ -48,7 +54,7 @@ public class RecipeDetailsController {
                 recipeData.put("difficulty_level", rs.getString("difficulty_level"));
                 recipeData.put("famous_place", rs.getString("famous_place"));
 
-                // ✅ Fetch recipe steps
+                // Fetch recipe steps
                 List<Map<String, Object>> steps = new ArrayList<>();
                 try (PreparedStatement stepsStmt = con.prepareStatement(stepsQuery)) {
                     stepsStmt.setInt(1, recipeId);
@@ -64,7 +70,7 @@ public class RecipeDetailsController {
                 }
                 recipeData.put("steps", steps);
 
-                // ✅ Fetch recipe ingredients
+                // Fetch recipe ingredients
                 List<String> ingredients = new ArrayList<>();
                 try (PreparedStatement ingStmt = con.prepareStatement(ingredientsQuery)) {
                     ingStmt.setInt(1, recipeId);

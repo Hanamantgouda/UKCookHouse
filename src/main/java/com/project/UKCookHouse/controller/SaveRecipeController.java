@@ -1,5 +1,6 @@
 package com.project.UKCookHouse.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import java.sql.*;
 import java.util.*;
@@ -7,10 +8,14 @@ import java.util.*;
 @RestController
 @CrossOrigin(origins = "*")
 public class SaveRecipeController {
+    @Value("${spring.datasource.url}")
+    private String dbUrl;
 
-    private final String URL = "jdbc:postgresql://localhost:5432/UK_COOK_HOUSE";
-    private final String USERNAME = "postgres";
-    private final String PASSWORD = "postgres";
+    @Value("${spring.datasource.username}")
+    private String dbUsername;
+
+    @Value("${spring.datasource.password}")
+    private String dbPassword;
 
     // --- Request class ---
     public static class SaveRecipeRequest {
@@ -18,13 +23,13 @@ public class SaveRecipeController {
         public int recipe_id;
     }
 
-    /** ✅ Save Recipe */
+    //Save Recipe
     @PostMapping("/saveRecipe")
     public Map<String, Object> saveRecipe(@RequestBody SaveRecipeRequest request) {
         Map<String, Object> response = new HashMap<>();
         String query = "INSERT INTO save_recipe (u_id, r_u_id) VALUES (?, ?)";
 
-        try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
              PreparedStatement stmt = con.prepareStatement(query)) {
 
             stmt.setInt(1, request.user_id);
@@ -46,13 +51,13 @@ public class SaveRecipeController {
         return response;
     }
 
-    /** ❌ Unsave Recipe */
+    //Unsave Recipe
     @DeleteMapping("/unsaveRecipe")
     public Map<String, Object> unsaveRecipe(@RequestParam int userId, @RequestParam int recipeId) {
         Map<String, Object> response = new HashMap<>();
         String query = "DELETE FROM save_recipe WHERE u_id = ? AND r_u_id = ?";
 
-        try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
              PreparedStatement stmt = con.prepareStatement(query)) {
 
             stmt.setInt(1, userId);
@@ -74,13 +79,13 @@ public class SaveRecipeController {
         return response;
     }
 
-    /** 🔍 Check if recipe is saved */
+    //Check if recipe is saved
     @GetMapping("/isRecipeSaved")
     public Map<String, Object> isRecipeSaved(@RequestParam int userId, @RequestParam int recipeId) {
         Map<String, Object> response = new HashMap<>();
         String query = "SELECT 1 FROM save_recipe WHERE u_id = ? AND r_u_id = ?";
 
-        try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
              PreparedStatement stmt = con.prepareStatement(query)) {
 
             stmt.setInt(1, userId);

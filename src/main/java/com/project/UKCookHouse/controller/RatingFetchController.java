@@ -1,5 +1,6 @@
 package com.project.UKCookHouse.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import java.sql.*;
 import java.util.*;
@@ -8,9 +9,14 @@ import java.util.*;
 @CrossOrigin(origins = "*")
 public class RatingFetchController {
 
-    private final String URL = "jdbc:postgresql://localhost:5432/UK_COOK_HOUSE";
-    private final String USERNAME = "postgres";
-    private final String PASSWORD = "postgres";
+    @Value("${spring.datasource.url}")
+    private String dbUrl;
+
+    @Value("${spring.datasource.username}")
+    private String dbUsername;
+
+    @Value("${spring.datasource.password}")
+    private String dbPassword;
 
     @GetMapping("/getRecipeRating")
     public Map<String, Object> getRecipeRating(@RequestParam int recipeId) {
@@ -18,7 +24,7 @@ public class RatingFetchController {
 
         String query = "SELECT COALESCE(AVG(rating), 0) AS avg_rating, COUNT(*) AS total_ratings FROM ratings WHERE r_id = ?";
 
-        try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
              PreparedStatement ps = con.prepareStatement(query)) {
 
             ps.setInt(1, recipeId);

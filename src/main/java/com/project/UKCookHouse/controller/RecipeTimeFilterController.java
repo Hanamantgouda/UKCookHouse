@@ -1,5 +1,6 @@
 package com.project.UKCookHouse.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import java.sql.*;
 import java.util.*;
@@ -8,14 +9,15 @@ import java.util.*;
 @CrossOrigin(origins = "*")
 public class RecipeTimeFilterController {
 
-    private final String URL = "jdbc:postgresql://localhost:5432/UK_COOK_HOUSE";
-    private final String USERNAME = "postgres";
-    private final String PASSWORD = "postgres";
+    @Value("${spring.datasource.url}")
+    private String dbUrl;
 
-    /**
-     * API Endpoint: /recipesByTime
-     * Example: /recipesByTime?time=30
-     */
+    @Value("${spring.datasource.username}")
+    private String dbUsername;
+
+    @Value("${spring.datasource.password}")
+    private String dbPassword;
+
     @GetMapping("/recipesByTime")
     public List<Map<String, Object>> getRecipesByTime(@RequestParam int time) {
         List<Map<String, Object>> recipeList = new ArrayList<>();
@@ -23,7 +25,7 @@ public class RecipeTimeFilterController {
         String query = "SELECT recipe_name, recipe_name_kn, recipe_description, recipe_description_kn, recipe_image, cooking_time " +
                 "FROM recipes WHERE cooking_time <= ? ORDER BY cooking_time ASC";
 
-        try (Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
              PreparedStatement stmt = con.prepareStatement(query)) {
 
             stmt.setInt(1, time);
