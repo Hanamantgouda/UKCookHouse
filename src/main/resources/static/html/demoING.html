@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Recipe Search - UK Cook House</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #fff9f0 0%, #ffe9d6 100%);
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 30px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      color: #ff6600;
+      font-size: 28px;
+    }
+
+    .ingredients-box {
+      background: #fff;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 600px;
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .ingredients-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .ingredient {
+      background: #ffe3c4;
+      color: #444;
+      padding: 8px 15px;
+      border-radius: 25px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    button {
+      background: #ff6600;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease-in-out;
+      margin-top: 15px;
+    }
+
+    button:hover {
+      background: #e65500;
+    }
+
+    .results-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-width: 1100px;
+      margin-top: 25px;
+    }
+
+    .recipe-card {
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+      overflow: hidden;
+      transition: transform 0.2s;
+    }
+
+    .recipe-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .recipe-image {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+
+    .recipe-info {
+      padding: 15px;
+    }
+
+    .recipe-name {
+      font-weight: 600;
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    .recipe-description {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    .match {
+      font-weight: 600;
+      color: #ff6600;
+    }
+
+    .loading {
+      margin-top: 20px;
+      color: #888;
+      font-size: 16px;
+    }
+
+    .no-results {
+      margin-top: 20px;
+      color: #999;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Find Recipes Based on Your Ingredients</h1>
+
+  <div class="ingredients-box">
+    <h3>Your Selected Ingredients:</h3>
+    <div class="ingredients-list" id="ingredientList"></div>
+    <button id="searchBtn">Find Recipes</button>
+  </div>
+
+  <div class="loading" id="loading" style="display:none;">Searching recipes...</div>
+  <div class="no-results" id="noResults" style="display:none;">No recipes found 😢</div>
+  <div class="results-container" id="results"></div>
+
+  <script>
+    const ingredientListDiv = document.getElementById('ingredientList');
+    const resultsContainer = document.getElementById('results');
+    const loadingDiv = document.getElementById('loading');
+    const noResultsDiv = document.getElementById('noResults');
+    const searchBtn = document.getElementById('searchBtn');
+
+    // Fetch ingredients from localStorage
+    const selectedIngredients = JSON.parse(localStorage.getItem('selectedIngredients')) || [];
+
+    // Display ingredients
+    if (selectedIngredients.length > 0) {
+      selectedIngredients.forEach(ing => {
+        const span = document.createElement('span');
+        span.className = 'ingredient';
+        span.textContent = ing;
+        ingredientListDiv.appendChild(span);
+      });
+    } else {
+      ingredientListDiv.innerHTML = "<p style='color:#999;'>No ingredients selected.</p>";
+    }
+
+    // Search function
+    async function searchRecipes() {
+      if (selectedIngredients.length === 0) {
+        alert("No ingredients found in localStorage!");
+        return;
+      }
+
+      resultsContainer.innerHTML = "";
+      loadingDiv.style.display = "block";
+      noResultsDiv.style.display = "none";
+
+      try {
+        const response = await fetch("/search", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ingredients: selectedIngredients })
+        });
+
+        const data = await response.json();
+        loadingDiv.style.display = "none";
+
+        if (data.length === 0 || data[0].error) {
+          noResultsDiv.style.display = "block";
+          return;
+        }
+
+        data.forEach(recipe => {
+          const card = document.createElement('div');
+          card.className = 'recipe-card';
+          card.innerHTML = `
+            <img src="${recipe.recipe_image}" class="recipe-image" alt="${recipe.recipe_name}">
+            <div class="recipe-info">
+              <div class="recipe-name">${recipe.recipe_name}</div>
+              <div class="recipe-description">${recipe.recipe_description || 'No description available.'}</div>
+              <div class="match">Match: ${recipe.match_percentage}%</div>
+            </div>
+          `;
+          resultsContainer.appendChild(card);
+        });
+
+      } catch (error) {
+        console.error("Error:", error);
+        loadingDiv.style.display = "none";
+        noResultsDiv.style.display = "block";
+        noResultsDiv.innerText = "Server error. Please try again later.";
+      }
+    }
+
+    // Button click handler
+    searchBtn.addEventListener('click', searchRecipes);
+  </script>
+
+</body>
+</html>

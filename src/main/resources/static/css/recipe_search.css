@@ -1,0 +1,236 @@
+/* === FONT IMPORT === */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Noto+Sans+Kannada:wght@400;700&display=swap');
+
+/* === RESET & BASE STYLES === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  font-family: 'Poppins', 'Noto Sans Kannada', sans-serif;
+  background: linear-gradient(135deg, #fdf6ec 0%, #f8ede3 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  color: #333;
+}
+
+/* === SEARCH CONTAINER === */
+.search-container {
+  background: #fff;
+  width: 90%;
+  max-width: 600px;
+  padding: 2.5rem 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.search-container:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* === TITLE === */
+h1 {
+  color: #e63946;
+  font-size: 1.9rem;
+  font-weight: 600;
+  margin-bottom: 1.75rem;
+}
+
+/* === INPUT AREA === */
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  font-size: 1rem;
+  border: 1.6px solid #e63946;
+  border-radius: 0.6rem;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input[type="text"]:focus {
+  border-color: #b22222;
+  box-shadow: 0 0 6px rgba(226, 57, 70, 0.35);
+}
+
+/* === BUTTON AREA === */
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+input[type="submit"] {
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 0.6rem;
+  background: #e63946;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+  min-width: 130px;
+}
+
+input[type="submit"]:hover {
+  background: #b22222;
+  transform: translateY(-2px);
+}
+
+/* === SUGGESTIONS BOX === */
+.suggestions {
+  position: absolute;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 0.6rem;
+  width: 100%;
+  max-height: 250px;
+  overflow-y: auto;
+  top: 100%;
+  left: 0;
+  margin-top: 0.6rem;
+  z-index: 10;
+  display: none;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  animation: fadeIn 0.25s ease-in-out;
+}
+
+/* Scrollbar styling */
+.suggestions::-webkit-scrollbar {
+  width: 6px;
+}
+
+.suggestions::-webkit-scrollbar-thumb {
+  background-color: #e63946;
+  border-radius: 4px;
+}
+
+/* === SUGGESTION HEADER === */
+.suggestion-header {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #eee;
+  padding: 0.5rem 0.75rem;
+  font-weight: 600;
+  color: #444;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+}
+
+/* === GRID LAYOUT === */
+.suggestion-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem 0.75rem;
+  padding: 0.25rem 0.75rem 0.75rem;
+  cursor: pointer;
+}
+
+.english-column div,
+.kannada-column div {
+  padding: 0.6rem 0.5rem;
+  border-radius: 0.4rem;
+  cursor: pointer;
+  transition: background 0.25s ease, color 0.25s ease;
+  word-break: break-word;
+}
+
+.english-column div:hover,
+.kannada-column div:hover {
+  background-color: #f9f9f9;
+  color: #e63946;
+}
+
+.english-column div {
+  text-align: left;
+  font-family: 'Poppins', sans-serif;
+}
+
+.kannada-column div {
+  text-align: left;
+  font-family: 'Noto Sans Kannada', sans-serif;
+  font-size: 1rem;
+}
+
+/* === ANIMATIONS === */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* === RESPONSIVE DESIGN === */
+@media (max-width: 768px) {
+  .search-container {
+    padding: 2rem 1.5rem;
+  }
+
+  h1 {
+    font-size: 1.6rem;
+  }
+
+  input[type="text"] {
+    font-size: 0.95rem;
+  }
+
+  input[type="submit"] {
+    font-size: 0.95rem;
+  }
+
+  .suggestion-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .suggestion-header {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-container {
+    padding: 1.5rem 1.25rem;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+  }
+
+  input[type="text"],
+  input[type="submit"] {
+    font-size: 0.9rem;
+  }
+
+  .button-group {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+}

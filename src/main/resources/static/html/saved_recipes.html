@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Saved Recipes</title>
+
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Noto+Sans+Kannada:wght@400;700&display=swap');
+    :root {
+      --primary: #e63946;
+      --primary-hover: #b62b37;
+      --bg: #fffef8;
+      --card-bg: #fff;
+      --text-dark: #222;
+      --text-light: #555;
+      --danger: #ffffff;
+      --danger-hover: #ffbcbc;
+    }
+
+    body {
+      font-family: 'Poppins', 'Noto Sans Kannada', sans-serif;
+      background: var(--bg);
+      margin: 0;
+      padding: 20px;
+      color: var(--text-dark);
+    }
+
+    header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    h1 {
+      margin: 10px 0;
+      font-size: 2rem;
+      font-weight: 600;
+    }
+
+    .btn-group {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .back-btn,
+    .lang-toggle {
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-weight: 500;
+    }
+
+    .back-btn {
+      background: #444;
+      color: white;
+      text-decoration: none;
+    }
+
+    .back-btn:hover {
+      background: #222;
+    }
+
+    .lang-toggle {
+      background: var(--primary);
+      color: white;
+    }
+
+    .lang-toggle:hover {
+      background: var(--primary-hover);
+    }
+
+    .recipes-wrapper {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 10px;
+    }
+
+    .recipes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 25px;
+      justify-content: center;
+    }
+
+    .recipe-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+      overflow: hidden;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      max-width: 300px;
+      margin: auto;
+      position: relative;
+    }
+
+    .recipe-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.15);
+    }
+
+    .recipe-img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+
+    .recipe-content {
+      padding: 16px;
+      flex-grow: 1;
+    }
+
+    .recipe-content h3 {
+      font-size: 18px;
+      margin: 10px 0 5px;
+    }
+
+    .recipe-content p {
+      font-size: 14px;
+      color: var(--text-light);
+      height: 42px;
+      overflow: hidden;
+    }
+
+    .recipe-actions {
+      display: flex;
+      justify-content: center;
+      padding: 12px;
+      border-top: 1px solid #eee;
+      position: relative;
+    }
+
+    .view-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-weight: 500;
+    }
+
+    .view-btn:hover {
+      background: var(--primary-hover);
+    }
+
+    /* Delete Button (Trash Icon) */
+    .delete-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: var(--danger);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      font-size: 18px;
+      line-height: 36px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .delete-btn:hover {
+      background: var(--danger-hover);
+      transform: scale(1.1);
+    }
+
+    .no-data {
+      text-align: center;
+      margin-top: 80px;
+      font-size: 1.2rem;
+      color: var(--text-light);
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 15px;
+      }
+      h1 {
+        font-size: 1.6rem;
+      }
+      .recipe-card {
+        border-radius: 12px;
+      }
+      .btn-group {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        margin-top: 15px;
+      }
+      .back-btn,
+      .lang-toggle {
+        width: 80%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Saved Recipes</h1>
+    <div class="btn-group">
+      <a href="#" class="back-btn" onclick="window.history.back(); return false;">⬅ Back</a>
+      <button id="langToggleBtn" class="lang-toggle">Switch to ಕನ್ನಡ</button>
+    </div>
+  </header>
+
+  <div class="recipes-wrapper">
+    <div id="savedRecipesContainer" class="recipes-grid"></div>
+  </div>
+
+  <script>
+    let currentLang = 'en';
+
+    // Load saved recipes for the logged-in user
+    async function loadSavedRecipes() {
+      const userId = document.cookie.replace(/(?:(?:^|.*;\s*)userID\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+      if (!userId) {
+        alert("⚠️ Please log in to view saved recipes.");
+        return;
+      }
+
+      try {
+        const res = await fetch(`/savedRecipes?userId=${userId}`);
+        const recipes = await res.json();
+        const container = document.getElementById("savedRecipesContainer");
+        container.innerHTML = "";
+
+        if (!recipes || recipes.length === 0) {
+          container.innerHTML = `<p class="no-data">No saved recipes yet 🔍</p>`;
+          return;
+        }
+
+        recipes.forEach(r => {
+          const name = currentLang === 'en' ? r.name_en : r.name_kn;
+          const desc = currentLang === 'en' ? r.description_en : r.description_kn;
+
+          const card = document.createElement("div");
+          card.className = "recipe-card";
+          card.innerHTML = `
+            <button class="delete-btn" onclick="unsaveRecipe(${userId}, ${r.recipe_id})">❌</button>
+            <img src="${r.image_url}" alt="${r.name_en}" class="recipe-img" loading="lazy">
+            <div class="recipe-content">
+              <h3>${name}</h3>
+              <p>${desc.substring(0, 80)}...</p>
+            </div>
+            <div class="recipe-actions">
+              <button class="view-btn" onclick="viewRecipe('${encodeURIComponent(r.name_en)}')">View Recipe</button>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+
+      } catch (err) {
+        console.error("❌ Error fetching recipes:", err);
+        alert("Error loading saved recipes. Please try again later.");
+      }
+    }
+
+    // View recipe details
+    function viewRecipe(name) {
+      window.location.href = `recipe_details_byname.html?name=${name}`;
+    }
+
+    // Unsave recipe (DELETE request)
+    async function unsaveRecipe(userId, recipeId) {
+      if (!confirm("Remove this recipe from your saved list?")) return;
+
+      try {
+        const res = await fetch(`/unsaveRecipe?userId=${userId}&recipeId=${recipeId}`, {
+          method: "DELETE",
+        });
+        const data = await res.json();
+
+        if (data.status === "unsaved") {
+          alert("✅ Recipe removed from saved list.");
+          loadSavedRecipes();
+        } else if (data.status === "not_found") {
+          alert("⚠️ Recipe not found in saved list.");
+        } else {
+          alert("❌ Error: " + data.message);
+        }
+
+      } catch (err) {
+        console.error("❌ Error unsaving recipe:", err);
+        alert("Error removing recipe. Please try again.");
+      }
+    }
+
+    // Language switcher
+    document.getElementById("langToggleBtn").addEventListener("click", () => {
+      currentLang = currentLang === 'en' ? 'kn' : 'en';
+      document.getElementById("langToggleBtn").innerText =
+        currentLang === 'en' ? 'Switch to ಕನ್ನಡ' : 'Switch to English';
+      loadSavedRecipes();
+    });
+
+    // Initial Load
+    document.addEventListener("DOMContentLoaded", loadSavedRecipes);
+  </script>
+</body>
+</html>

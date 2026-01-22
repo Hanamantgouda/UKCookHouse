@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sort Recipes by Time</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Noto+Sans+Kannada:wght@400;700&display=swap');
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #fdf6ec;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: 'Noto Sans Kannada', sans-serif;
+    }
+
+    h1 {
+      color: #e63946;
+      margin-top: 60px;
+      font-size: 28px;
+    }
+
+    .input-container {
+      margin-top: 30px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    input {
+      padding: 10px 15px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #e63946;
+      box-shadow: 0 0 5px rgba(209, 122, 0, 0.3);
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #e63946;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #c32e3b;
+    }
+
+    .toggle-btn {
+      background-color: #333;
+    }
+
+    .toggle-btn:hover {
+      background-color: #333;
+    }
+
+    .results {
+      margin-top: 40px;
+      width: 90%;
+      max-width: 800px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      transition: transform 0.2s ease;
+      cursor: pointer;
+    }
+
+    .card:hover {
+      transform: scale(1.03);
+    }
+
+    .card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+
+    .card-content {
+      padding: 15px;
+    }
+
+    .card h3 {
+      color: black;
+      margin: 0 0 10px 0;
+    }
+
+    .card p {
+      color: #444;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .time {
+      font-weight: bold;
+      color: #555;
+      margin-top: 8px;
+    }
+
+    .cook-btn {
+      margin-top: 10px;
+      width: 100%;
+      padding: 8px 0;
+      background-color: #e63946;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.3s;
+    }
+
+    .cook-btn:hover {
+      background-color: #bc2f3a;
+    }
+
+    .no-results {
+      color: #e63946;
+      margin-top: 20px;
+      font-size: 18px;
+    }
+
+    .lang-status {
+      margin-top: 15px;
+      color: #333;
+      font-weight: 500;
+      font-size: 16px;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin: 25px 0;
+    }
+
+    .pagination button {
+      background-color: #e63946;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 14px;
+      cursor: pointer;
+    }
+
+    .pagination button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    .pagination span {
+      font-weight: 500;
+      color: #333;
+    }
+
+    .loader {
+      width: 48px;
+      height: 48px;
+      border: 5px solid #ddd;
+      border-top: 5px solid #3498db;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 30px auto;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>Sort Recipes by Time</h1>
+
+<div class="input-container">
+  <input type="number" id="timeInput" placeholder="Enter time in minutes" min="1" />
+  <button onclick="fetchRecipes()">Search</button>
+  <button id="toggleLangBtn" class="toggle-btn" onclick="toggleLanguage()">Switch to ಕನ್ನಡ</button>
+</div>
+
+<div class="lang-status" id="langStatus">Current Language: English</div>
+
+<div id="loader" class="loader" style="display: none;"></div>
+
+<div id="results" class="results"></div>
+<div id="noResults" class="no-results" style="display:none;">No recipes found for the given time.</div>
+
+<div class="pagination" id="pagination" style="display:none;">
+  <button id="prevBtn" onclick="prevPage()">Prev</button>
+  <span id="pageInfo">Page 1</span>
+  <button id="nextBtn" onclick="nextPage()">Next</button>
+</div>
+
+<script>
+  let currentLanguage = 'english';
+  let fetchedRecipes = [];
+  let currentPage = 1;
+  const recipesPerPage = 6;
+
+  // Restore state if available
+  window.addEventListener('load', () => {
+    const savedState = localStorage.getItem('recipeState');
+    if (savedState) {
+      const state = JSON.parse(savedState);
+      fetchedRecipes = state.recipes || [];
+      currentPage = state.page || 1;
+      currentLanguage = state.language || 'english';
+
+      // Update language UI
+      const btn = document.getElementById('toggleLangBtn');
+      const langStatus = document.getElementById('langStatus');
+      if (currentLanguage === 'english') {
+        btn.textContent = 'Switch to Kannada';
+        langStatus.textContent = 'Current Language: English';
+      } else {
+        btn.textContent = 'Switch to English';
+        langStatus.textContent = 'Current Language: ಕನ್ನಡ';
+      }
+
+      if (fetchedRecipes.length > 0) {
+        displayRecipes(true); // restore page with scroll to top
+        document.getElementById('pagination').style.display = fetchedRecipes.length > recipesPerPage ? 'flex' : 'none';
+      }
+    }
+  });
+
+  async function fetchRecipes() {
+const time = document.getElementById('timeInput').value.trim();
+const resultsDiv = document.getElementById('results');
+const noResultsDiv = document.getElementById('noResults');
+const pagination = document.getElementById('pagination');
+const loader = document.getElementById('loader');
+
+resultsDiv.innerHTML = '';
+noResultsDiv.style.display = 'none';
+pagination.style.display = 'none';
+currentPage = 1;
+
+if (!time) {
+  alert('Please enter a valid time.');
+  return;
+}
+
+// SHOW loader
+loader.style.display = 'block';
+
+// FORCE browser repaint (CRITICAL FIX)
+await new Promise(requestAnimationFrame);
+
+try {
+  const response = await fetch(
+    `/recipesByTime?time=${time}`
+  );
+
+  const data = await response.json();
+
+  if (!Array.isArray(data) || data.length === 0 || data[0]?.error) {
+    noResultsDiv.style.display = 'block';
+    return;
+  }
+
+  fetchedRecipes = data;
+  saveState();
+  displayRecipes(true);
+
+  if (fetchedRecipes.length > recipesPerPage) {
+    pagination.style.display = 'flex';
+  }
+
+} catch (error) {
+  console.error('Error fetching recipes:', error);
+  alert('Failed to load recipes. Please try again.');
+} finally {
+  // ALWAYS hide loader
+  loader.style.display = 'none';
+}
+}
+
+
+  function displayRecipes(scrollTop = false) {
+    const resultsDiv = document.getElementById('results');
+    const start = (currentPage - 1) * recipesPerPage;
+    const end = start + recipesPerPage;
+    const paginatedRecipes = fetchedRecipes.slice(start, end);
+    resultsDiv.innerHTML = '';
+
+    paginatedRecipes.forEach(recipe => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      const displayName = currentLanguage === 'english' ? recipe.recipe_name : recipe.recipe_name_kn;
+      const description = currentLanguage === 'english' ? recipe.recipe_description : recipe.recipe_description_kn;
+
+      card.innerHTML = `
+    <img src="${recipe.recipe_image}" alt="${displayName}">
+    <div class="card-content">
+      <h3>${displayName}</h3>
+      <p>${description}</p>
+      <div class="time">⏱️ ${recipe.cooking_time} min</div>
+      <button class="cook-btn" onclick="cookNow('${encodeURIComponent(recipe.recipe_name)}')">Cook Now</button>
+    </div>
+  `;
+      resultsDiv.appendChild(card);
+    });
+
+    updatePaginationControls();
+
+    if (scrollTop) window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updatePaginationControls() {
+    const totalPages = Math.ceil(fetchedRecipes.length / recipesPerPage);
+    document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${totalPages}`;
+    document.getElementById('prevBtn').disabled = currentPage === 1;
+    document.getElementById('nextBtn').disabled = currentPage === totalPages;
+    document.getElementById('pagination').style.display = totalPages > 1 ? 'flex' : 'none';
+  }
+
+  function nextPage() {
+    const totalPages = Math.ceil(fetchedRecipes.length / recipesPerPage);
+    if (currentPage < totalPages) {
+      currentPage++;
+      saveState();
+      displayRecipes(true);
+    }
+  }
+
+  function prevPage() {
+    if (currentPage > 1) {
+      currentPage--;
+      saveState();
+      displayRecipes(true);
+    }
+  }
+
+  function toggleLanguage() {
+    currentLanguage = currentLanguage === 'english' ? 'ಕನ್ನಡ' : 'english';
+    const btn = document.getElementById('toggleLangBtn');
+    const langStatus = document.getElementById('langStatus');
+
+    if (currentLanguage === 'english') {
+      btn.textContent = 'Switch to ಕನ್ನಡ';
+      langStatus.textContent = 'Current Language: English';
+    } else {
+      btn.textContent = 'Switch to English';
+      langStatus.textContent = 'Current Language: ಕನ್ನಡ';
+    }
+
+    saveState();
+    if (fetchedRecipes.length > 0) displayRecipes();
+  }
+
+  function cookNow(recipeName) {
+    saveState(); // Save current state before navigating
+    window.location.href = `recipe_details_byname.html?name=${recipeName}`;
+  }
+
+  function saveState() {
+    const state = {
+      recipes: fetchedRecipes,
+      page: currentPage,
+      language: currentLanguage
+    };
+    localStorage.setItem('recipeState', JSON.stringify(state));
+  }
+
+  // Clear state only when leaving completely (optional)
+  window.addEventListener('beforeunload', () => {
+    // localStorage.removeItem('recipeState');
+  });
+
+  // Restore state if available
+  window.addEventListener('load', () => {
+    const savedState = localStorage.getItem('recipeState');
+    if (savedState) {
+      const state = JSON.parse(savedState);
+      fetchedRecipes = state.recipes || [];
+      currentPage = state.page || 1;
+      currentLanguage = state.language || 'english';
+
+      // Update language UI
+      const btn = document.getElementById('toggleLangBtn');
+      const langStatus = document.getElementById('langStatus');
+      if (currentLanguage === 'english') {
+        btn.textContent = 'Switch to ಕನ್ನಡ';
+        langStatus.textContent = 'Current Language: English';
+      } else {
+        btn.textContent = 'Switch to English';
+        langStatus.textContent = 'Current Language: ಕನ್ನಡ';
+      }
+
+      if (fetchedRecipes.length > 0) displayRecipes(true);
+    }
+  });
+
+  // Clear state once user fully lands on page and not coming from back
+  window.addEventListener('pageshow', (event) => {
+    if (!event.persisted) {
+      localStorage.removeItem('recipeState');
+    }
+  });
+
+</script>
+
+
+
+
+</body>
+
+</html>

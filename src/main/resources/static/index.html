@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UKCookHouse - Taste Of Karnataka</title>
+    <link rel="stylesheet" href="css/first.css">
+    <meta name="theme-color" content="#e74c3c">
+
+    <script>
+        // Check if user cookies exist
+        document.addEventListener("DOMContentLoaded", function () {
+          const cookies = document.cookie.split("; ").reduce((acc, current) => {
+            const [key, value] = current.split("=");
+            acc[key] = value;
+            return acc;
+          }, {});
+
+          // If both userEmail and userToken exist → redirect to home.html
+          if (cookies.userEmail && cookies.userToken) {
+            window.location.href = "html/home.html";
+          }
+        });
+    </script>
+
+</head>
+<body>
+
+<div class="container">
+
+    <header>
+        <div class="logo">
+            <img src="images/Borcelle (3).png" alt="UK CookHouse Logo" class="image">
+        </div>
+
+        <div class="hamburger" id="hamburger">&#9776;</div>
+
+
+        <nav id="nav-menu">
+            <ul>
+                <li><a href="#about">ABOUT US</a></li>
+                <li><a href="#why-us">Why US</a></li>
+                <li><a href="#benefits">BENEFITS</a></li>
+                <li><a href="html/login.html" class="btn-login">LOGIN</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-text">
+            <h1>WHERE COOKING IS PERSONALIZED.</h1>
+            <p>Turn every meal into a masterpiece with UK CookHouse. Say goodbye to mealtime stress, wasted ingredients, and repetitive dishes. Discover personalized recipes based on what’s in your kitchen, your time, and your taste.</p>
+            <div class="buttons">
+                <button class="btn-dark" onclick="window.location.href='html/login.html'">Explore Recipes</button>
+
+            </div>
+        </div>
+        <div class="hero-img">
+            <img src="images/plate.png" alt="Burger Image">
+        </div>
+    </section>
+
+    <!-- ABOUT SECTION -->
+    <section class="about" id="about">
+        <h2>About Us</h2>
+        <p>UK CookHouse is your smart cooking companion that helps you decide what to cook using the ingredients you already have. We make cooking simple, healthy, and enjoyable with quick recipe suggestions, less food waste, and more tasty variety.</p>
+    </section>
+
+    <!-- WHY US SECTION -->
+    <section class="why-us" id="why-us">
+        <h2>Why Choose Us?</h2>
+        <div class="why-us-cards">
+            <div class="card">
+                <h3>Personalized Cooking Experience</h3>
+                <p>We help you cook based on what’s in your kitchen, your time, and your taste preferences.</p>
+            </div>
+            <div class="card">
+                <h3>From North Karnataka to the World</h3>
+                <p>We aim to share the legacy of our cuisine beyond borders, making the world taste the heart of Karnataka.</p>
+            </div>
+            <div class="card">
+                <h3>Smart Ingredient Matching</h3>
+                <p>Find the perfect recipe in seconds by entering the ingredients you have — no stress, no waste, just smart cooking.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- BENEFITS SECTION -->
+    <section class="benefits" id="benefits">
+        <h2>Benefits</h2>
+        <div class="benefits-grid">
+            <div class="benefit-card">
+                <h3>Smart Ingredient-Based Recipes</h3>
+                <p>Find recipes instantly using the ingredients you already have — no more last-minute grocery runs!</p>
+            </div>
+            <div class="benefit-card">
+                <h3>Healthy & Easy Cooking</h3>
+                <p>Get curated meal ideas that balance taste, health, and simplicity for your everyday lifestyle.</p>
+            </div>
+            <div class="benefit-card">
+                <h3>Zero Food Waste</h3>
+                <p>Make the most of what’s in your kitchen and contribute to a sustainable cooking culture.</p>
+            </div>
+            <div class="benefit-card">
+                <h3>Personalized Experience</h3>
+                <p>Save your favorite dishes, explore cuisines, and enjoy a cooking journey tailored just for you.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        <div class="footer-left">
+            <p>© 2025 UK CookHouse. All Rights Reserved.</p>
+            <p>
+                <a href="html/privacy_policy.html" class="footer-link">Privacy Policy</a><br>
+            </p>
+        </div>
+        <div class="footer-right">
+            <h3>Contact Us</h3>
+            <p>Email: ukcookhouseservice@gmail.com</p>
+        </div>
+    </div>
+
+</div>
+
+<script src="js/first.js"></script>
+</body>
+</html>

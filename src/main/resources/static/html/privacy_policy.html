@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Privacy Policy — UKCookHouse</title>
+  <meta name="theme-color" content="#e74c3c" />
+  <style>
+    /* ===== Production-ready styling for Privacy Policy ===== */
+    :root{
+      --brand:#e74c3c;
+      --muted:#f7f3f2;
+      --bg:#fff8f6;
+      --text:#222;
+      --sub:#555;
+      --card-shadow: 0 8px 30px rgba(0,0,0,0.08);
+      --radius:12px;
+      --max-width:1100px;
+      --glass: rgba(255,255,255,0.6);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Inter, "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, #fff 0%, var(--bg) 100%);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.6;
+      padding-bottom:60px; /* space for footer */
+    }
+
+    header.topbar{
+      background:var(--brand);
+      color:#fff;
+      padding:10px 20px;
+      text-align:center;
+      box-shadow: 0 6px 30px rgba(0,0,0,0.12);
+    }
+    header.topbar h1{
+      margin:0;
+      font-size:clamp(20px, 2.4vw, 28px);
+      letter-spacing:0.2px;
+      font-weight:700;
+    }
+    header.topbar p{
+      margin:8px 0 0;
+      font-size:14px;
+      opacity:0.95;
+    }
+
+    main.container{
+      max-width:var(--max-width);
+      margin:28px auto;
+      padding:28px;
+      background:linear-gradient(180deg,#fff 0%, #fff 100%);
+      border-radius:var(--radius);
+      box-shadow: var(--card-shadow);
+      border:1px solid rgba(0,0,0,0.03);
+    }
+
+    .meta{
+      display:flex;
+      justify-content:space-between;
+      gap:20px;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+
+    .meta .version{
+      color:var(--sub);
+      font-size:14px;
+    }
+
+    .intro{
+      color:var(--sub);
+      margin-bottom:18px;
+      font-size:15px;
+    }
+
+    h2.section{
+      color:var(--brand);
+      font-size:18px;
+      margin:28px 0 12px;
+    }
+
+    p, ul{
+      font-size:15px;
+      color:var(--text);
+      margin:10px 0;
+    }
+
+    ul{padding-left:20px}
+
+    .note {
+      background: linear-gradient(90deg,#fff 0%, #fff 50%);
+      border-left:4px solid var(--brand);
+      padding:12px 14px;
+      border-radius:8px;
+      color:var(--sub);
+      margin-top:14px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.03);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit,minmax(240px,1fr));
+      gap:16px;
+      margin-top:14px;
+    }
+
+    .card {
+      background:#fff;
+      border-radius:10px;
+      padding:14px;
+      border:1px solid rgba(0,0,0,0.03);
+    }
+
+    table.privacy-table{
+      width:100%;
+      border-collapse:collapse;
+      margin:12px 0 24px;
+    }
+    table.privacy-table th,
+    table.privacy-table td{
+      text-align:left;
+      padding:10px 12px;
+      border-bottom:1px solid rgba(0,0,0,0.04);
+      font-size:14px;
+      color:var(--sub);
+    }
+    table.privacy-table th{ color:var(--brand); font-weight:600; width:220px; }
+
+    footer.sitefoot{
+      position:fixed;
+      left:0; right:0; bottom:0;
+      background:rgba(255,255,255,0.98);
+      border-top:1px solid rgba(0,0,0,0.04);
+      padding:10px 20px;
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      align-items:center;
+      font-size:13px;
+      color:var(--sub);
+    }
+
+    /* Cookie banner */
+    .cookie-banner{
+      position:fixed;
+      left:20px;
+      right:20px;
+      bottom:80px;
+      background:#fff;
+      border-radius:12px;
+      box-shadow:0 12px 40px rgba(0,0,0,0.12);
+      padding:14px 18px;
+      display:flex;
+      gap:12px;
+      align-items:center;
+      z-index:9999;
+      transform:translateY(0);
+    }
+    .cookie-banner p{ margin:0; color:var(--sub); font-size:14px }
+    .cookie-actions{ margin-left:auto; display:flex; gap:10px; align-items:center; }
+    .btn{
+      padding:10px 16px;
+      border-radius:10px;
+      border:none;
+      cursor:pointer;
+      font-weight:600;
+      font-size:14px;
+    }
+    .btn-accept{ background:var(--brand); color:#fff; box-shadow:0 6px 18px rgba(231,76,60,0.18); }
+    .btn-decline{ background:#f4f4f4; color:var(--text); border:1px solid rgba(0,0,0,0.04) }
+
+    /* Responsive tweaks */
+    @media (max-width:720px){
+      main.container{ margin:16px; padding:18px; }
+      .meta{ flex-direction:column; align-items:flex-start; gap:8px }
+      .cookie-banner{ left:12px; right:12px; bottom:90px; padding:12px; }
+      footer.sitefoot{ font-size:12px; padding:12px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar" role="banner">
+    <h1>UKCookHouse — Privacy Policy</h1>
+    <p>Last updated: November 1, 2025</p>
+  </header>
+
+  <main class="container" role="main" aria-labelledby="policy-title">
+
+    <h2 id="policy-title" class="section">Overview</h2>
+    <p class="intro">
+      UKCookHouse respects your privacy and is committed to protecting your personal data. This policy explains what information we collect,
+      why we collect it, how we use it, and the controls you have. It is drafted to align with common global privacy principles.
+    </p>
+
+    <h2 class="section">1. What we collect</h2>
+    <p>We collect information necessary to provide the website's core features and to improve your experience. The primary categories are:</p>
+
+    <div class="grid">
+      <div class="card">
+        <h3 style="color:var(--brand);margin:0 0 8px;font-size:15px">Account & Authentication</h3>
+        <p>When you register or sign in: <strong>username</strong>, <strong>email</strong>, and <strong>password</strong> (securely stored — see <a href="#security-section">Security</a> below).</p>
+      </div>
+
+      <div class="card">
+        <h3 style="color:var(--brand);margin:0 0 8px;font-size:15px">Preferences & Selection</h3>
+        <p>Selected ingredients (so the site can remember your pantry and suggest recipes). Preferences like dietary tags or favorite recipes when provided.</p>
+      </div>
+    </div>
+
+    <h2 class="section">2. How we use your data</h2>
+    <ul>
+      <li>To create and manage your account, authenticate logins, and allow you to save favorite recipes and ingredients.</li>
+      <li>To power features: ingredient-based recipe suggestions.</li>
+      <li>To provide customer support.</li>
+      <li>To detect and prevent abuse, fraud, or unauthorized access, and to maintain platform integrity.</li>
+    </ul>
+
+    <h2 class="section">3. Cookies, sessions & retention</h2>
+    <p>
+      We use cookies and similar local storage mechanisms for multiple purposes:
+    </p>
+
+    <table class="privacy-table" aria-describedby="cookie-desc">
+      <thead>
+        <tr><th>Purpose</th><th>What is stored</th><th>Retention</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Authentication / Stay signed in</td>
+          <td>Secure session token (not raw password). For convenience we may also store a small identifier like email (obfuscated) in a secure cookie to rehydrate user session.</td>
+          <td>7 days (cookie expiry). You can revoke this by logging out or clearing cookies.</td>
+        </tr>
+        <tr>
+          <td>Remember selected ingredients</td>
+          <td>List of ingredient ids / names (localStorage or cookie) so the app personalizes recipe suggestions.</td>
+          <td>7 days by default; persisted until user clears preferences or account settings change.</td>
+        </tr>
+        <tr>
+          <td>Analytics & Performance</td>
+          <td>Anonymous usage stats (page views, search terms aggregated)</td>
+          <td>Aggregated retention varies — raw logs purged periodically</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p id="cookie-desc" class="note">
+      <strong>Important:</strong> Cookies used to "stay signed in" are secured via HTTPS (Secure flag) and set with `SameSite` attributes to mitigate cross-site request forgery. Sensitive data—like passwords—are never stored in plaintext in cookies.
+    </p>
+
+    <h2 class="section">4. Account & password handling</h2>
+    <ul>
+      <li>Passwords are protected using industry practices, raw passwords are never stored.</li>
+      <li>Authentication tokens are issued server-side and stored in secure cookies with proper expiry (7 days).</li>
+      <li>If you forget your password, we provide a secure reset flow via your registered email — the reset token is time-limited.</li>
+    </ul>
+
+    <h2 class="section">5. Third parties & hosting</h2>
+    <p>We rely on trusted providers for hosting, email delivery, and analytics. Examples include (but are not limited to) hosting platforms, analytics providers, and email services. These providers process only the data they need to provide the service and are contractually bound to protect it.</p>
+
+    <h2 class="section">6. Your rights & controls</h2>
+    <ul>
+      <li><strong>Access & correction:</strong> You may view your information in account settings. And you can reset password by secure OTP.</li>
+      <li><strong>Deletion:</strong> You can request deletion of your account and personal data through contact — we will remove account data from active systems and purge backups per our retention schedule.</li>
+      <li><strong>Cookies & preferences:</strong> You can revoke cookie consent, clear stored ingredients, or log out at any time.</li>
+      <li><strong>Opt-out of marketing:</strong> If you opted into newsletters, you can unsubscribe using the link in emails.</li>
+    </ul>
+
+    <h2 class="section" id="security-section">7. Security measures</h2>
+    <p>We use HTTPS for all connections, enforce secure cookie flags, monitor for suspicious activity, and follow standard server security practices (firewalls, access controls). While we strive to protect your data, no system is 100% secure.</p>
+
+    <h2 class="section">8. International transfers</h2>
+    <p>Data may be processed and stored in the country where our servers or service providers operate. When data is transferred internationally, we take steps to ensure its protection consistent with applicable law and contractual safeguards.</p>
+
+    <h2 class="section">9. Changes to this policy</h2>
+    <p>We may update this policy occasionally. When changes are material, we will notify users via the website or email. The “Last updated” date at the top shows the current version.</p>
+
+    <div class="note" role="note">
+      <strong>How cookies actually work on UKCookHouse:</strong>
+      <ul style="margin:8px 0 0 18px">
+        <li>On login, a secure session cookie is set and expires in 7 days unless you log out earlier.</li>
+        <li>Your selected ingredients are stored locally and used by the recipe engine to generate suggestions.</li>
+        <li>You can clear these at any time from Account → Preferences or by clearing browser cookies/storage.</li>
+      </ul>
+    </div>
+
+    <h2 class="section">10. How to contact us</h2>
+    <p>If you have questions, requests for data access/deletion, or privacy concerns, email our privacy team at:
+      <a href="mailto:ukcookhouseservice@gmail.com">ukcookhouseservice@gmail.com</a>
+    </p>
+
+    <p style="margin-top:20px;color:var(--sub);font-size:13px">
+      This privacy notice is a high-level summary to help you understand how UKCookHouse handles data. It does not create contractual rights. For legal inquiries, please contact our privacy address above.
+    </p>
+
+  </main>
+
+  <footer class="sitefoot" role="contentinfo">
+    © 2025 UKCookHouse — The Taste Of Karnataka • <a href="mailto:ukcookhouseservice@gmail.com">ukcookhouseservice@gmail.com</a>
+  </footer>
+</body>
+</html>

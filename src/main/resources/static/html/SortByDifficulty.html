@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sort Recipes by Difficulty</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Noto+Sans+Kannada:wght@400;700&display=swap');
+
+    body {
+      background: #fdf6ec;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: 'Noto Sans Kannada', sans-serif;
+
+    }
+
+    h1 {
+      color: #e63946;
+      margin-top: 60px;
+      font-size: 28px;
+    }
+
+    .input-container {
+      margin-top: 30px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    select,
+    button {
+      padding: 10px 15px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      outline: none;
+    }
+
+    select:focus {
+      border-color: #e63946;
+      box-shadow: 0 0 5px rgba(209, 122, 0, 0.3);
+    }
+
+    button {
+      background-color: #e63946;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #ba2b37;
+    }
+
+    .toggle-btn {
+      background-color: #444;
+    }
+
+    .toggle-btn:hover {
+      background-color: #333;
+    }
+
+    .results {
+      margin-top: 40px;
+      width: 90%;
+      max-width: 800px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      transition: transform 0.2s ease;
+      cursor: pointer;
+    }
+
+    .card:hover {
+      transform: scale(1.03);
+    }
+
+    .card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+
+    .card-content {
+      padding: 15px;
+    }
+
+    .card h3 {
+      color: black;
+      margin: 0 0 10px 0;
+    }
+
+    .card p {
+      color: #444;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .difficulty {
+      font-weight: bold;
+      color: #555;
+      margin-top: 8px;
+    }
+
+    .cook-btn {
+      margin-top: 10px;
+      width: 100%;
+      padding: 8px 0;
+      background-color: #e63946;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.3s;
+    }
+
+    .cook-btn:hover {
+      background-color: #b92d38;
+    }
+
+    .no-results {
+      color: #e63946;
+      margin-top: 20px;
+      font-size: 18px;
+    }
+
+    .lang-status {
+      margin-top: 15px;
+      color: #333;
+      font-weight: 500;
+      font-size: 16px;
+    }
+
+    .pagination {
+      margin: 30px 0;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .pagination button {
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: none;
+      background-color: #e63946;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .pagination button:hover {
+      background-color: #c42f3c;
+    }
+
+    .pagination button:disabled {
+      background-color: #ccc;
+      cursor: default;
+    }
+
+    .loader {
+      width: 48px;
+      height: 48px;
+      border: 5px solid #ddd;
+      border-top: 5px solid #e63946;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 30px auto;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>Sort Recipes by Difficulty</h1>
+
+<div class="input-container">
+  <select id="difficultySelect">
+    <option value="" disabled selected>Select Difficulty</option>
+    <option value="Easy">Easy</option>
+    <option value="Medium">Medium</option>
+    <option value="Hard">Hard</option>
+  </select>
+  <button onclick="fetchRecipes()">Search</button>
+  <button id="toggleLangBtn" class="toggle-btn" onclick="toggleLanguage()">Switch to ಕನ್ನಡ</button>
+</div>
+
+<div class="lang-status" id="langStatus">Current Language: English</div>
+
+<div id="loader" class="loader" hidden></div>
+
+<div id="results" class="results"></div>
+<div id="noResults" class="no-results" style="display:none;">No recipes found for the selected difficulty.</div>
+
+<div class="pagination" id="pagination" style="display:none;">
+  <button id="prevBtn" onclick="prevPage()">Previous</button>
+  <span id="pageInfo"></span>
+  <button id="nextBtn" onclick="nextPage()">Next</button>
+</div>
+
+<script>
+  let currentLanguage = 'english';
+  let fetchedRecipes = [];
+  let currentPage = 1;
+  const recipesPerPage = 6;
+
+  // Restore state if available (only if navigating back)
+  window.addEventListener('load', () => {
+    const savedState = localStorage.getItem('difficultyRecipeState');
+    if (savedState) {
+      const state = JSON.parse(savedState);
+      fetchedRecipes = state.recipes || [];
+      currentPage = state.page || 1;
+      currentLanguage = state.language || 'english';
+
+      const btn = document.getElementById('toggleLangBtn');
+      const langStatus = document.getElementById('langStatus');
+      if (currentLanguage === 'english') {
+        btn.textContent = 'Switch to ಕನ್ನಡ';
+        langStatus.textContent = 'Current Language: English';
+      } else {
+        btn.textContent = 'Switch to English';
+        langStatus.textContent = 'Current Language: ಕನ್ನಡ';
+      }
+
+      if (fetchedRecipes.length > 0) displayPage(true);
+    }
+  });
+
+  // Clear localStorage once user fully returns or reloads the page
+  window.addEventListener('pageshow', (event) => {
+    // event.persisted = true if page is restored from bfcache (back/forward cache)
+    // If not persisted, user loaded the page freshly => clear saved state
+    if (!event.persisted) {
+      localStorage.removeItem('difficultyRecipeState');
+    }
+  });
+
+  async function fetchRecipes() {
+    const difficulty = document.getElementById('difficultySelect').value;
+    const resultsDiv = document.getElementById('results');
+    const noResultsDiv = document.getElementById('noResults');
+    const pagination = document.getElementById('pagination');
+    const loader = document.getElementById('loader');
+
+    if (!difficulty) {
+      alert('Please select a difficulty level.');
+      return;
+    }
+
+    // reset UI
+    resultsDiv.innerHTML = '';
+    noResultsDiv.style.display = 'none';
+    pagination.style.display = 'none';
+    currentPage = 1;
+
+    // ✅ show loader
+    loader.hidden = false;
+
+    const startTime = Date.now();
+
+    try {
+      const response = await fetch(
+        `/recipesByDifficulty?level=${difficulty}`
+      );
+
+      const data = await response.json();
+
+      if (!Array.isArray(data) || data.length === 0 || data[0]?.error) {
+        noResultsDiv.style.display = 'block';
+        return;
+      }
+
+      fetchedRecipes = data;
+      saveState();
+      displayPage();
+
+    } catch (error) {
+      console.error('Error fetching recipes:', error);
+      alert('Failed to load recipes. Please try again.');
+
+    } finally {
+      // ✅ ensure loader stays visible at least 300ms
+      const elapsed = Date.now() - startTime;
+      if (elapsed < 300) {
+        await sleep(300 - elapsed);
+      }
+      loader.hidden = true;
+    }
+  }
+
+
+
+
+  function displayPage(fromRestore = false) {
+    const resultsDiv = document.getElementById('results');
+    resultsDiv.innerHTML = '';
+
+    const start = (currentPage - 1) * recipesPerPage;
+    const end = start + recipesPerPage;
+    const pageRecipes = fetchedRecipes.slice(start, end);
+
+    pageRecipes.forEach(recipe => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      const name = currentLanguage === 'english' ? recipe.recipe_name : recipe.recipe_name_kn;
+      const description = currentLanguage === 'english' ? recipe.recipe_description : recipe.recipe_description_kn;
+
+      card.innerHTML = `
+      <img src="${recipe.recipe_image}" alt="${name}">
+      <div class="card-content">
+        <h3>${name}</h3>
+        <p>${description}</p>
+        <div class="difficulty">level: ${recipe.difficulty_level}</div>
+        <button class="cook-btn" onclick="cookNow('${encodeURIComponent(recipe.recipe_name)}')">Cook Now</button>
+      </div>
+    `;
+      resultsDiv.appendChild(card);
+    });
+
+    const paginationDiv = document.getElementById('pagination');
+    if (fetchedRecipes.length > recipesPerPage) {
+      paginationDiv.style.display = 'flex';
+      document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${Math.ceil(fetchedRecipes.length / recipesPerPage)}`;
+      document.getElementById('prevBtn').disabled = currentPage === 1;
+      document.getElementById('nextBtn').disabled = end >= fetchedRecipes.length;
+    } else {
+      paginationDiv.style.display = 'none';
+    }
+
+    if (!fromRestore) saveState();
+  }
+
+  function nextPage() {
+    if (currentPage * recipesPerPage < fetchedRecipes.length) {
+      currentPage++;
+      displayPage();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  function prevPage() {
+    if (currentPage > 1) {
+      currentPage--;
+      displayPage();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  function toggleLanguage() {
+    currentLanguage = currentLanguage === 'english' ? 'ಕನ್ನಡ' : 'english';
+    const btn = document.getElementById('toggleLangBtn');
+    const langStatus = document.getElementById('langStatus');
+    if (currentLanguage === 'english') {
+      btn.textContent = 'Switch to ಕನ್ನಡ';
+      langStatus.textContent = 'Current Language: English';
+    } else {
+      btn.textContent = 'Switch to English';
+      langStatus.textContent = 'Current Language: ಕನ್ನಡ';
+    }
+    displayPage();
+  }
+
+  function cookNow(selectedRecipe) {
+    saveState(); // Save current state before navigating
+    window.location.href = `recipe_details_byname.html?name=${selectedRecipe}`;
+  }
+
+  function saveState() {
+    const state = {
+      recipes: fetchedRecipes,
+      page: currentPage,
+      language: currentLanguage
+    };
+    localStorage.setItem('difficultyRecipeState', JSON.stringify(state));
+  }
+</script>
+
+
+
+</body>
+
+</html>

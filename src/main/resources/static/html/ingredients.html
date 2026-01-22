@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ingredient Selector</title>
+  <style>
+    /* === FONT IMPORT === */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Noto+Sans+Kannada:wght@400;700&display=swap');
+
+/* === RESET & BASE STYLES === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Poppins', 'Noto Sans Kannada', sans-serif;
+  background: #fff4f4;
+  color: #333;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* === HEADER === */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: #e63946;
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.pantry-container {
+  position: relative;
+  cursor: pointer;
+}
+
+.pantry-icon {
+  font-size: 1.8rem;
+  transition: transform 0.3s ease;
+}
+
+.pantry-icon:hover {
+  transform: scale(1.1);
+}
+
+.badge {
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  background: greenyellow;
+  color: black;
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  border-radius: 40%;
+  font-weight: bold;
+}
+
+/* === SEARCH BAR === */
+.search-bar {
+  margin: 1.5rem auto;
+  max-width: 600px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 1rem;
+}
+
+.search-bar input {
+  flex: 1;
+  padding: 0.8rem 1rem;
+  border: 1.5px solid #ccc;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.search-bar input:focus {
+  border-color: #e63946;
+  box-shadow: 0 0 6px rgb(229, 70, 70);
+  outline: none;
+}
+
+.toggle-btn {
+  background: #333;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.75rem 1.2rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.toggle-btn:hover {
+  background: black;
+  transform: translateY(-2px);
+}
+
+/* === CATEGORY SECTIONS === */
+.category {
+  margin: 1.5rem;
+}
+
+.category h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: #e63946;
+  font-weight: 600;
+}
+
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+/* === CHIPS === */
+.chip {
+  padding: 0.6rem 1rem;
+  background: #fff;
+  border: 1.5px solid #ccc;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  user-select: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.chip:hover {
+  background: #f9f9ff;
+}
+
+.chip.selected {
+  background: #e63946;
+  color: #fff;
+  border-color: #333;
+  box-shadow: 0 3px 8px rgba(79, 70, 229, 0.25);
+}
+
+/* === FIND BUTTON === */
+.find-btn {
+  display: block;
+  margin: 2rem auto;
+  padding: 0.9rem 1.8rem;
+  background: #e63946;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s ease;
+}
+
+.find-btn:hover {
+  background: #96212b;
+  transform: translateY(-2px);
+}
+
+/* === PANTRY DRAWER === */
+.pantry-drawer {
+  position: fixed;
+  top: 0;
+  right: -350px;
+  width: 320px;
+  height: 100%;
+  background: #fff;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.15);
+  transition: right 0.4s ease;
+  padding: 1.2rem;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+
+.pantry-drawer.open {
+  right: 0;
+}
+
+.pantry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.5rem;
+}
+
+.pantry-header h3 {
+  color: #4f46e5;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  cursor: pointer;
+  color: #333;
+  transition: color 0.3s ease;
+}
+
+.close-btn:hover {
+  color: #e63946;
+}
+
+.pantry-list {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.pantry-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 0.95rem;
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  color: #e63946;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+}
+
+.remove-btn:hover {
+  color: #b22222;
+}
+
+/* === RESPONSIVE DESIGN === */
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+
+  .search-bar {
+    flex-direction: column;
+    gap: 0.8rem;
+    padding: 0 1.2rem;
+  }
+
+  .category {
+    margin: 1rem;
+  }
+
+  .find-btn {
+    width: 80%;
+  }
+
+  .pantry-drawer {
+    width: 100%;
+    right: -100%;
+    border-radius: 0;
+  }
+
+  .pantry-drawer.open {
+    right: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 14px;
+  }
+
+  header h1 {
+    font-size: 1.2rem;
+  }
+
+  .chip {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.8rem;
+  }
+
+  .find-btn {
+    font-size: 0.9rem;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Ingredient Selector</h1>
+    <div class="pantry-container" onclick="togglePantry()">
+      <div class="pantry-icon">🛒</div>
+      <div class="badge" id="pantryBadge" style="display:none;">0</div>
+    </div>
+  </header>
+
+  <!-- Search + Toggle -->
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Search ingredients..." onkeyup="filterIngredients()" />
+    <button class="toggle-btn" onclick="toggleLanguage()">🌐 English / ಕನ್ನಡ</button>
+  </div>
+
+  <!-- English Ingredients -->
+  <div id="englishList"></div>
+
+  <!-- Kannada Ingredients -->
+  <div id="kannadaList" style="display:none;"></div>
+
+  <button class="find-btn" onclick="findRecipes()">Find Recipes</button>
+
+  <!-- Pantry Drawer -->
+  <div class="pantry-drawer" id="pantryDrawer">
+    <div class="pantry-header">
+      <h2>My Pantry</h2>
+      <button class="close-btn" onclick="togglePantry()">✖</button>
+    </div>
+    <div class="pantry-list" id="pantryList"></div>
+  </div>
+
+  <script>
+    const pantry = new Set();
+    let currentLang = "english";
+
+    // Full ingredient list
+    const ingredients = [
+  { en: "dried red chilli powder", kn: "ಒಣ ಕೆಂಪು ಮೆಣಸು ಪುಡಿ", category: "Spices & Seasonings" },
+  { en: "masala powder", kn: "ಮಸಾಲಾ ಪುಡಿ", category: "Spices & Seasonings" },
+  { en: "ajwain", kn: "ಅಜ್ವೈನ್", category: "Spices & Seasonings" },
+  { en: "coconut oil", kn: "ತೇಂಗಿನ ಎಣ್ಣೆ", category: "Dairy & Oils" },
+  { en: "pudina", kn: "ಪುದೀನಾ", category: "Vegetables & Fruits" },
+  { en: "pepper", kn: "ಮೆಣಸು", category: "Spices & Seasonings" },
+  { en: "turmeric powder", kn: "ಹಳದಿ ಪುಡಿ", category: "Spices & Seasonings" },
+  { en: "menthya", kn: "ಮೆಂತ್ಯಾ", category: "Spices & Seasonings" },
+  { en: "kava", kn: "ಕವಾ", category: "Sweeteners & Sugars" },
+  { en: "chapati", kn: "ಚಪಾತಿ", category: "Flours & Grains" },
+  { en: "mint leaves", kn: "ಪುದೀನಾ ಸೊಪ್ಪು", category: "Vegetables & Fruits" },
+  { en: "brinjal", kn: "ಬೇಂಗನ್", category: "Vegetables & Fruits" },
+  { en: "jaggery", kn: "ಬೆಲ್ಲ", category: "Sweeteners & Sugars" },
+  { en: "puffed rice", kn: "ಅವಲಕ್ಕಿ", category: "Flours & Grains" },
+  { en: "niger powder", kn: "ರಾಗಿ ಹಿಟ್ಟು ಪುಡಿ", category: "Spices & Seasonings" },
+  { en: "green peas", kn: "ಹಸಿರು ಬಟಾಣಿ", category: "Vegetables & Fruits" },
+  { en: "sugar powder", kn: "ಸಕ್ಕರೆ ಪುಡಿ", category: "Sweeteners & Sugars" },
+  { en: "seeme brinjal", kn: "ಸೀಮೇ ಬೇಟೆಂಗನ್", category: "Vegetables & Fruits" },
+  { en: "horse gram", kn: "ಕೊಂಡಕರೆ", category: "Pulses & Legumes" },
+  { en: "ajwain seeds", kn: "ಅಜ್ವೈನ್ ಬೀಜ", category: "Spices & Seasonings" },
+  { en: "rice flour", kn: "ಅಕ್ಕಿ ಹಿಟ್ಟು", category: "Flours & Grains" },
+  { en: "star anise", kn: "ಸ್ಟಾರ್ ಅನಿಸ್", category: "Spices & Seasonings" },
+  { en: "black stone flower", kn: "ಕಾಲು ಹೂವು", category: "Spices & Seasonings" },
+  { en: "ragi flour", kn: "ರಾಗಿ ಹಿಟ್ಟು", category: "Flours & Grains" },
+  { en: "flax seed", kn: "ಅಲಸಂಗೆ ಬೀಜ", category: "Spices & Seasonings" },
+  { en: "dhanya powder", kn: "ಧನಿಯಾ ಪುಡಿ", category: "Spices & Seasonings" },
+  { en: "avarekalu", kn: "ಅವರೇಕಲು", category: "Pulses & Legumes" },
+  { en: "curry leaves", kn: "ಕರಿಬೇವಿನ ಸೊಪ್ಪು", category: "Spices & Seasonings" },
+  { en: "almond", kn: "ಬಾದಾಮಿ", category: "Dry Fruits" },
+  { en: "turmeric", kn: "ಹಳದಿ", category: "Spices & Seasonings" },
+  { en: "dates", kn: "ಖರ್ಜೂರ", category: "Dry Fruits" },
+  { en: "cumin", kn: "ಜೀರಿಗೆ", category: "Spices & Seasonings" },
+  { en: "tomato", kn: "ಟಮೋಟೋ", category: "Vegetables & Fruits" },
+  { en: "capsicum", kn: "ಕ್ಯಾಪ್ಸಿಕಮ್", category: "Vegetables & Fruits" },
+  { en: "mustard", kn: "ಸಾಸಿವೆ", category: "Spices & Seasonings" },
+  { en: "cabbage", kn: "ಕ್ಯಾಬೇಜ್", category: "Vegetables & Fruits" },
+  { en: "ginger paste", kn: "ಇಂಗು ಪುಡಿ", category: "Spices & Seasonings" },
+  { en: "harive leaves", kn: "ಹರಿವೆ ಸೊಪ್ಪು", category: "Vegetables & Fruits" },
+  { en: "saffron", kn: "ಕೆಸರಿ", category: "Spices & Seasonings" },
+  { en: "byadagi red chilli", kn: "ಬಯಡಗಿ ಮೆಣಸು", category: "Spices & Seasonings" },
+  { en: "maida flour", kn: "ಮೈದಾ ಹಿಟ್ಟು", category: "Flours & Grains" },
+  { en: "Sajji flour", kn: "ಸಜ್ಜಿ ಹಿಟ್ಟು", category: "Flours & Grains" },
+  { en: "garlic", kn: "ಬೆಳ್ಳುಳ್ಳಿ", category: "Spices & Seasonings" },
+  { en: "gram dal", kn: "ಕಬ್ಳಿ ಚಣಾ", category: "Pulses & Legumes" },
+  { en: "menthya seed", kn: "ಮೆಂತ್ಯಾ ಬೀಜ", category: "Spices & Seasonings" },
+  { en: "gasagase", kn: "ಗಸಗಸೆ", category: "Flours & Grains" },
+  { en: "malai", kn: "ಮಾಲೈ", category: "Dairy & Oils" },
+  { en: "pomegranate", kn: "ದಾಳಿಂಬೆ", category: "Fruits" },
+  { en: "rava", kn: "ರವೆ", category: "Flours & Grains" },
+  { en: "fennel seed", kn: "ಸೊಪ್ಪು ಬೀಜ", category: "Spices & Seasonings" },
+  { en: "alasande seeds", kn: "ಅಲಸಂದಿ ಬೀಜ", category: "Spices & Seasonings" },
+  { en: "coriander leaves", kn: "ಧನಿಯಾ ಸೊಪ್ಪು", category: "Spices & Seasonings" },
+  { en: "cardamom powder", kn: "ಎಲಕ್ಕಿ ಪುಡಿ", category: "Spices & Seasonings" },
+  { en: "carrot", kn: "ಗರಾಜು", category: "Vegetables & Fruits" },
+  { en: "refined oil", kn: "ಶುದ್ಧ ಎಣ್ಣೆ", category: "Dairy & Oils" },
+  { en: "bendekai", kn: "ಬೇಂಡೆಕಾಯಿ", category: "Vegetables & Fruits" },
+  { en: "peas", kn: "ಬಟಾಣಿ", category: "Vegetables & Fruits" },
+  { en: "green gram", kn: "ಹಸಿರು ಹುರಳಿದ ಮೆಕ್ಕು", category: "Pulses & Legumes" },
+  { en: "ladies finger", kn: "ಬಿಂಬಲೆಕಾಯಿ", category: "Vegetables & Fruits" },
+  { en: "ginger", kn: "ಇಂಗು", category: "Spices & Seasonings" },
+  { en: "onion", kn: "ಇರುಳ್ಳಿ", category: "Vegetables & Fruits" },
+  { en: "baking soda", kn: "ಬೇಕಿಂಗ್ ಸೋಡಾ", category: "Spices & Seasonings" },
+  { en: "cauli flower", kn: "ಹುಳಿಯ ಹೂವು", category: "Vegetables & Fruits" },
+  { en: "pista", kn: "ಪಿಸ್ತಾ", category: "Dry Fruits" },
+  { en: "Ghee", kn: "ನೈವೇದ್ಯ ತೈಲ", category: "Dairy & Oils" },
+  { en: "red chilli", kn: "ಕೆಂಪು ಮೆಣಸು", category: "Spices & Seasonings" },
+  { en: "jowar nuchu", kn: "ಜೋಳ ನುಚು", category: "Flours & Grains" },
+  { en: "bottle gourd", kn: "ಸೊರೆಕಾಯಿ", category: "Vegetables & Fruits" },
+  { en: "milk", kn: "ಹಾಲು", category: "Dairy & Oils" },
+  { en: "gojju masala", kn: "ಗೋಜ್ಜು ಮಸಾಲಾ", category: "Spices & Seasonings" },
+  { en: "noolkol", kn: "ನೂಲ್ಕೋಲ್", category: "Vegetables & Fruits" },
+  { en: "wheat flour", kn: "ಗೋಧಿ ಹಿಟ್ಟು", category: "Flours & Grains" },
+  { en: "coconut", kn: "ತೇಂಗಿನಕಾಯಿ", category: "Dairy & Oils" },
+  { en: "ragi", kn: "ರಾಗಿ", category: "Flours & Grains" },
+  { en: "green chilli", kn: "ಹಸಿರು ಮೆಣಸು", category: "Spices & Seasonings" },
+  { en: "millets (sajji)", kn: "ಸಜ್ಜಿ ಧಾನ್ಯಗಳು", category: "Flours & Grains" },
+  { en: "pumpkin seeds", kn: "ಹೆಸರು ಬೀಜಗಳು", category: "Spices & Seasonings" },
+  { en: "bitter gourd", kn: "ಹುದಿರು ಕಾಯಿ", category: "Vegetables & Fruits" },
+  { en: "chilli flakes", kn: "ಮೆಣಸು ತುರಿ", category: "Spices & Seasonings" },
+  { en: "hing powder", kn: "ಹಿಂಗು ಪುಡಿ", category: "Spices & Seasonings" },
+  { en: "chiroti rava", kn: "ಚಿರೋತಿ ರವೆ", category: "Flours & Grains" },
+  { en: "idli rava", kn: "ಇಡ್ಲಿ ರವೆ", category: "Flours & Grains" },
+  { en: "ginger garlic paste", kn: "ಇಂಗು ಬೆಳ್ಳುಳ್ಳಿ ಪುಡಿ", category: "Spices & Seasonings" },
+  { en: "mustard seeds", kn: "ಸಾಸಿವೆ ಬೀಜ", category: "Spices & Seasonings" },
+  { en: "dhaniya", kn: "ಧನಿಯಾ", category: "Spices & Seasonings" },
+  { en: "yallu", kn: "ಯಲ್ಲು", category: "Spices & Seasonings" },
+  { en: "avalakki", kn: "ಅವಾಲಕ್ಕಿ", category: "Flours & Grains" },
+  { en: "bengal gram", kn: "ಚಣಾ", category: "Pulses & Legumes" },
+  { en: "dill leaves", kn: "ಸುಪ್ಪು ಸೊಪ್ಪು", category: "Spices & Seasonings" },
+  { en: "jaypatri mace", kn: "ಜಾಯಪತ್ರಿ", category: "Spices & Seasonings" },
+  { en: "coconut milk", kn: "ತೇಂಗಿನ ಹಾಲು", category: "Dairy & Oils" },
+  { en: "cucumber", kn: "ಸೌರೆಕಾಯಿ", category: "Vegetables & Fruits" },
+  { en: "curd", kn: "ತಾಜಾ ಮೊಸರು", category: "Dairy & Oils" },
+  { en: "black pepper", kn: "ಕಪ್ಪು ಮೆಣಸು", category: "Spices & Seasonings" },
+  { en: "dried red chilli", kn: "ಒಣ ಕೆಂಪು ಮೆಣಸು", category: "Spices & Seasonings" },
+  { en: "cumin powder", kn: "ಜೀರಿಗೆ ಪುಡಿ", category: "Spices & Seasonings" },
+  { en: "milk powder", kn: "ಹಾಲಿನ ಪುಡಿ", category: "Dairy & Oils" },
+  { en: "sambar powder", kn: "ಸಾಂಬಾರ್ ಪುಡಿ", category: "Spices & Seasonings" },
+  { en: "methi", kn: "ಮೆಂತೆ", category: "Spices & Seasonings" },
+  { en: "Gram flour", kn: "ಬೇಸನ್ ಹಿಟ್ಟು", category: "Flours & Grains" },
+  { en: "amaranth", kn: "ಅಮರಾಂತ್", category: "Flours & Grains" },
+  { en: "pumpkin", kn: "ಸೊರೆಕಾಯಿ", category: "Vegetables & Fruits" },
+  { en: "drumstick", kn: "ಮುರಿ", category: "Vegetables & Fruits" },
+  { en: "pundi (gongura) leaves", kn: "ಪುಂಡಿ ಸೊಪ್ಪು", category: "Vegetables & Fruits" },
+  { en: "cashew", kn: "ಕಾಜು", category: "Dry Fruits" },
+  { en: "bread", kn: "ಬ್ರೆಡ್", category: "Flours & Grains" },
+  { en: "peanut", kn: "ಕಡಲೆಕಾಯಿ", category: "Dry Fruits" },
+  { en: "coriander", kn: "ಧನಿಯಾ", category: "Spices & Seasonings" },
+  { en: "green chilli paste", kn: "ಹಸಿರು ಮೆಣಸು ಪೇಸ್ಟ್", category: "Spices & Seasonings" },
+  { en: "toor dal", kn: "ತುರ್ವು ದಾಲ್", category: "Pulses & Legumes" },
+  { en: "rotti", kn: "ರೊಟ್ಟಿ", category: "Flours & Grains" },
+  { en: "Jowar flour", kn: "ಜೋಳ ಹಿಟ್ಟು", category: "Flours & Grains" },
+  { en: "drumstick leaves", kn: "ಮುರಿ ಸೊಪ್ಪು", category: "Vegetables & Fruits" },
+  { en: "peppercorns", kn: "ಮೆಣಸು ಕಣಗಳು", category: "Spices & Seasonings" },
+  { en: "raisins", kn: "ಒಣದ್ರಾಕ್ಷಿ", category: "Dry Fruits" },
+  { en: "methi leaves", kn: "ಮೆಂತೆ ಸೊಪ್ಪು", category: "Spices & Seasonings" },
+  { en: "tamarind", kn: "ಪೂಲಿ", category: "Spices & Seasonings" },
+  { en: "garam masala powder", kn: "ಗರುಮ ಮಸಾಲಾ ಪುಡಿ", category: "Spices & Seasonings" },
+  { en: "vermicelli (shavige)", kn: "ಶಾವಿಗೆ", category: "Flours & Grains" },
+  { en: "potato", kn: "ಅಲೂಗಡ್ಡೆ", category: "Vegetables & Fruits" },
+  { en: "niger seed powder", kn: "ರಾಗಿ ಬೀಜ ಪುಡಿ", category: "Spices & Seasonings" },
+  { en: "cinnamon", kn: "ದಾಲ್ಚಿನ್ನಿ", category: "Spices & Seasonings" },
+  { en: "beans", kn: "ಬೀನ್ಸ್", category: "Vegetables & Fruits" },
+  { en: "edible gum", kn: "ಗಂಥಿ", category: "Spices & Seasonings" },
+  { en: "bisi bele bath powder", kn: "ಬಿಸಿ ಬೇಳೆ ಬಾತ್ ಪುಡಿ", category: "Spices & Seasonings" },
+  { en: "coriander powder", kn: "ಧನಿಯಾ ಪುಡಿ", category: "Spices & Seasonings" },
+  { en: "moong dal", kn: "ಮೂಂಗ್ ದಾಲ್", category: "Pulses & Legumes" },
+  { en: "oil", kn: "ಎಣ್ಣೆ", category: "Dairy & Oils" },
+  { en: "puliogare powder", kn: "ಪುಳಿಯೋಗರೆ ಪುಡಿ", category: "Spices & Seasonings" },
+  { en: "green beans", kn: "ಹಸಿರು ಬೀನ್ಸ್", category: "Vegetables & Fruits" },
+  { en: "dhaniya powder", kn: "ಧನಿಯಾ ಪುಡಿ", category: "Spices & Seasonings" },
+  { en: "niger seeds", kn: "ರಾಗಿ ಬೀಜ", category: "Spices & Seasonings" },
+  { en: "akki flour", kn: "ಅಕ್ಕಿ ಹಿಟ್ಟು", category: "Flours & Grains" },
+  { en: "ivy gourd", kn: "ತುಂಡೆಕಾಯಿ", category: "Vegetables & Fruits" },
+  { en: "idli rice", kn: "ಇಡ್ಲಿ ಅಕ್ಕಿ", category: "Flours & Grains" },
+  { en: "cloves", kn: "ಲವಂಗ", category: "Spices & Seasonings" },
+  { en: "ridge gourd", kn: "ಹರಡಿಕಾಯಿ", category: "Vegetables & Fruits" },
+  { en: "white yallu", kn: "ಬಿಳಿ ಯಲ್ಲು", category: "Spices & Seasonings" },
+  { en: "Salt", kn: "ಉಪ್ಪು", category: "Spices & Seasonings" },
+  { en: "sesame seeds", kn: "ಎಳ್ಳು", category: "Spices & Seasonings" },
+  { en: "amaranthus leaves", kn: "ಅಮರಾಂತ್ ಸೊಪ್ಪು", category: "Vegetables & Fruits" },
+  { en: "menthya leaves", kn: "ಮೆಂತ್ಯಾ ಸೊಪ್ಪು", category: "Spices & Seasonings" },
+  { en: "chilli powder", kn: "ಮೆಣಸು ಪುಡಿ", category: "Spices & Seasonings" },
+  { en: "chana dal", kn: "ಚಣಾ ದಾಲ್", category: "Pulses & Legumes" },
+  { en: "Gulab Jamun powder", kn: "ಗುಲಾಬ್ ಜಾಮೂನ್ ಪುಡಿ", category: "Sweeteners & Sugars" },
+  { en: "toor peas", kn: "ತುರ್ವು ಪೀಸಸ್", category: "Pulses & Legumes" },
+  { en: "rice", kn: "ಅಕ್ಕಿ", category: "Flours & Grains" },
+  { en: "sugar", kn: "ಸಕ್ಕರೆ", category: "Sweeteners & Sugars" },
+  { en: "nutmeg powder", kn: "ಜಾಯಿಂಥಿ ಪುಡಿ", category: "Spices & Seasonings" },
+  { en: "sabudana", kn: "ಸಾಬುದಾನ", category: "Flours & Grains" },
+  { en: "anjeer", kn: "ಅಂಜೀರ", category: "Dry Fruits" },
+  { en: "Putani", kn: "ಪುಟಾಣಿ", category: "Vegetables & Fruits" },
+  { en: "peanut powder", kn: "ಕಾಯಿ ಬಟಾಣಿ ಪುಡಿ", category: "Dry Fruits" },
+  { en: "stone flower", kn: "ಕಲ್ಲು ಹೂವು", category: "Spices & Seasonings" },
+  { en: "rasam powder", kn: "ರಸಂ ಪುಡಿ", category: "Spices & Seasonings" },
+  { en: "palak leaves", kn: "ಪಾಲಕ್ ಸೊಪ್ಪು", category: "Vegetables & Fruits" },
+  { en: "sesame seed oil", kn: "ಎಳ್ಳು ಎಣ್ಣೆ", category: "Dairy & Oils" },
+  { en: "butter", kn: "ಬಟರ್", category: "Dairy & Oils" },
+  { en: "pineapple", kn: "ಅನಾನಸ್", category: "Fruits" },
+  { en: "methi seeds", kn: "ಮೆಂತೆ ಬೀಜ", category: "Spices & Seasonings" },
+  { en: "urad dal", kn: "ಉರದ ದಾಲ್", category: "Pulses & Legumes" },
+  { en: "coriander seeds", kn: "ಧನಿಯಾ ಬೀಜ", category: "Spices & Seasonings" },
+  { en: "banana", kn: "ಬಾಳೆಹಣ್ಣು", category: "Fruits" },
+  { en: "watermelon seeds", kn: "ಕಲ್ಲಂಗಡಿ ಬೀಜ", category: "Dry Fruits" },
+  { en: "Dry fruits", kn: "ಒಣಹಣ್ಣುಗಳು", category: "Dry Fruits" },
+  { en: "bay leaves", kn: "ತೇಕೆ ಸೊಪ್ಪು", category: "Spices & Seasonings" },
+  { en: "dry dates", kn: "ಒಣ ಖರ್ಜೂರ", category: "Dry Fruits" },
+  { en: "ash gourd", kn: "ಬಿಳಿ ಕಂಬಳಿ", category: "Vegetables & Fruits" },
+  { en: "bay leaf", kn: "ಬೇ ಲೀವ್", category: "Spices & Seasonings" },
+  { en: "lemon", kn: "ನಿಂಬೆಹಣ್ಣು", category: "Fruits" }
+];
+
+
+    const enDiv = document.getElementById("englishList");
+    const knDiv = document.getElementById("kannadaList");
+
+    function renderIngredients() {
+      enDiv.innerHTML = "";
+      knDiv.innerHTML = "";
+      const categories = [...new Set(ingredients.map(i => i.category))];
+
+      categories.forEach(cat => {
+        const enCat = document.createElement("div");
+        enCat.className = "category";
+        enCat.innerHTML = `<h2>🌾 ${cat}</h2><div class="container"></div>`;
+
+        const knCat = document.createElement("div");
+        knCat.className = "category";
+        knCat.innerHTML = `<h2>🌾 ${cat}</h2><div class="container"></div>`;
+
+        ingredients.filter(i => i.category === cat).forEach(i => {
+          const enChip = document.createElement("div");
+          enChip.className = "chip";
+          enChip.innerText = i.en;
+          enChip.setAttribute("data-kn", i.kn);
+
+          const knChip = document.createElement("div");
+          knChip.className = "chip";
+          knChip.innerText = i.kn;
+          knChip.setAttribute("data-en", i.en);
+
+          enCat.querySelector(".container").appendChild(enChip);
+          knCat.querySelector(".container").appendChild(knChip);
+        });
+
+        enDiv.appendChild(enCat);
+        knDiv.appendChild(knCat);
+      });
+    }
+
+    renderIngredients();
+
+    // Restore pantry from localStorage
+    window.addEventListener("DOMContentLoaded", () => {
+      const saved = JSON.parse(localStorage.getItem("selectedIngredients")) || [];
+      saved.forEach(ing => pantry.add(ing));
+      markSelected();
+      renderPantry();
+    });
+
+    // Ingredient selection
+    document.body.addEventListener("click", (e) => {
+      if (e.target.classList.contains("chip")) {
+        const enName = currentLang === "english"
+          ? e.target.innerText
+          : e.target.getAttribute("data-en");
+
+        if (pantry.has(enName)) {
+          pantry.delete(enName);
+          e.target.classList.remove("selected");
+        } else {
+          pantry.add(enName);
+          e.target.classList.add("selected");
+        }
+        savePantry();
+        renderPantry();
+      }
+    });
+
+    function togglePantry() {
+      document.getElementById("pantryDrawer").classList.toggle("open");
+    }
+
+    function renderPantry() {
+      const list = document.getElementById("pantryList");
+      const badge = document.getElementById("pantryBadge");
+      list.innerHTML = "";
+      pantry.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "pantry-item";
+        div.innerHTML = `<span>${item}</span>
+          <button class="remove-btn" onclick="removeFromPantry('${item}')">Remove</button>`;
+        list.appendChild(div);
+      });
+      badge.style.display = pantry.size ? "block" : "none";
+      badge.textContent = pantry.size;
+    }
+
+    function removeFromPantry(item) {
+      pantry.delete(item);
+      markSelected();
+      savePantry();
+      renderPantry();
+    }
+
+    function savePantry() {
+      localStorage.setItem("selectedIngredients", JSON.stringify([...pantry]));
+    }
+
+    function findRecipes() {
+      if (pantry.size === 0) return alert("Please select at least one ingredient!");
+      window.location.href = "recipes.html";
+    }
+
+    function filterIngredients() {
+      const input = document.getElementById("searchInput").value.toLowerCase();
+      document.querySelectorAll(".chip").forEach(chip => {
+        chip.style.display = chip.innerText.toLowerCase().includes(input) ? "inline-block" : "none";
+      });
+    }
+
+    function toggleLanguage() {
+      if (currentLang === "english") {
+        enDiv.style.display = "none";
+        knDiv.style.display = "block";
+        currentLang = "kannada";
+      } else {
+        knDiv.style.display = "none";
+        enDiv.style.display = "block";
+        currentLang = "english";
+      }
+      markSelected();
+    }
+
+    function markSelected() {
+      document.querySelectorAll(".chip").forEach(chip => {
+        const enName = chip.innerText;
+        const dataEn = chip.getAttribute("data-en");
+        if (pantry.has(enName) || pantry.has(dataEn)) chip.classList.add("selected");
+        else chip.classList.remove("selected");
+      });
+    }
+  </script>
+</body>
+</html>

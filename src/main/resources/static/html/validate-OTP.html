@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify OTP</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #fdf6ec 0%, #f0e4d7 100%); display:flex; justify-content:center; align-items:center; min-height:100vh; }
+
+    .otp-container {
+      background:#fff; padding:2.5rem; border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.1);
+      text-align:center; width:90%; max-width:400px;
+    }
+
+    h2 { color:#ff5722; font-size:1.8rem; margin-bottom:1rem; }
+    p { color:#666; margin-bottom:1.5rem; }
+
+    .otp-inputs {
+      display:flex; justify-content:space-between; gap:10px; margin-top:1rem;
+    }
+
+    .otp-inputs input {
+      width:45px; height:50px; text-align:center; font-size:1.5rem; font-weight:bold;
+      border:1px solid #ccc; border-radius:6px; transition:border 0.3s, box-shadow 0.3s;
+    }
+
+    .otp-inputs input:focus { border-color:#ff5722; box-shadow:0 0 6px rgba(255,87,34,0.3); outline:none; }
+
+    button {
+      margin-top:1.5rem; padding:0.85rem; font-size:1rem; font-weight:500; color:#fff;
+      background-color:#ff4d4d; border:none; border-radius:6px; cursor:pointer;
+      transition:background-color 0.3s, transform 0.2s;
+    }
+    button:hover { background-color:#e64a19; transform:translateY(-2px); }
+
+    .message { margin-top:1rem; font-size:0.95rem; }
+    .message.success { color:green; }
+    .message.error { color:red; }
+  </style>
+</head>
+<body>
+  <div class="otp-container">
+    <h2>Verify OTP</h2>
+    <p>Enter the 6-digit OTP sent to your email.</p>
+    <form id="otpForm">
+      <div class="otp-inputs">
+        <input type="text" maxlength="1" required>
+        <input type="text" maxlength="1" required>
+        <input type="text" maxlength="1" required>
+        <input type="text" maxlength="1" required>
+        <input type="text" maxlength="1" required>
+        <input type="text" maxlength="1" required>
+      </div>
+      <button type="submit">Verify</button>
+    </form>
+    <div id="message" class="message"></div>
+  </div>
+
+  <script>
+    const otpForm = document.getElementById('otpForm');
+    const messageDiv = document.getElementById('message');
+    const inputs = document.querySelectorAll('.otp-inputs input');
+
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    // Auto focus to next input
+    inputs.forEach((input, idx) => {
+      input.addEventListener('input', () => {
+        if (input.value.length === 1 && idx < inputs.length - 1) {
+          inputs[idx + 1].focus();
+        }
+      });
+
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && input.value === '' && idx > 0) {
+          inputs[idx - 1].focus();
+        }
+      });
+    });
+
+    otpForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const enteredOtp = Array.from(inputs).map(i => i.value).join('');
+      const storedOtp = getCookie('otp');
+      const email = getCookie('email');
+
+      if (enteredOtp === storedOtp) {
+        messageDiv.textContent = "OTP verified successfully!";
+        messageDiv.className = "message success";
+
+        setTimeout(() => {
+          window.location.href = "reset-password.html";
+        }, 1200);
+      } else {
+        messageDiv.textContent = "Invalid OTP. Please try again.";
+        messageDiv.className = "message error";
+      }
+    });
+  </script>
+</body>
+</html>

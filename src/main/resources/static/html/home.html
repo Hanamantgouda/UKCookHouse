@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UK CookHouse | Taste of Karnataka</title>
+  <link rel="stylesheet" href="../css/home.css" />
+</head>
+
+<body>
+  <!-- ===== Navbar ===== -->
+  <header class="navbar">
+    <div class="logo">
+      <img src="../images/Borcelle (3).png" alt="UK CookHouse Logo" class="image">
+    </div>
+
+    <div class="nav-right">
+      <button class="saved-btn" onclick="window.location.href='saved_recipes.html'">Saved Recipes</button>
+
+      <button id="profileBtn" class="profile-btn" aria-label="User Profile">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#e63946" viewBox="0 0 24 24">
+          <path
+            d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z" />
+        </svg>
+      </button>
+
+
+    </div>
+  </header>
+
+  <!-- Sidebar -->
+  <div id="sidebar" class="sidebar">
+    <h3>Profile</h3>
+    <a href="profile.html">View Profile</a>
+    <a href="#" id="logoutBtn">Logout</a>
+  </div>
+
+  <!-- Overlay -->
+  <div id="overlay" class="overlay-bg"></div>
+
+  <!-- ===== Full Width Scroll Sections ===== -->
+  <main class="scroll-sections">
+    <!-- Recipe Section -->
+    <section class="section">
+      <img src="../images/recipeName.png" alt="Recipes" class="bg-image" />
+      <div class="overlay"></div>
+      <div class="content">
+        <h1>Explore Recipes</h1>
+        <p>Discover authentic Karnataka dishes and taste the heritage.</p>
+        <button class="btn" onclick="window.location.href='recipe_search.html'">Explore</button>
+      </div>
+    </section>
+
+    <!-- Sort Section -->
+    <section class="section">
+      <img src="../images/sortby.png" alt="Sort" class="bg-image" />
+      <div class="overlay"></div>
+      <div class="content">
+        <h1>Sort By</h1>
+        <p>Filter dishes by time, Difficulty level.</p>
+        <button class="btn" onclick="showSortOptions()">Sort Now</button>
+      </div>
+    </section>
+
+    <div id="sortOptions" class="sort-popup">
+      <div class="popup-content">
+        <h2>Select Sorting Type</h2>
+        <div class="btn-group">
+          <button class="option-btn" onclick="redirectTo('time')">Sort by Time</button>
+          <button class="option-btn" onclick="redirectTo('difficulty')">Sort by Difficulty</button>
+        </div>
+        <button class="close-btn" onclick="closePopup()">Close ✖</button>
+      </div>
+    </div>
+
+    <!-- Ingredients Section -->
+    <section class="section">
+      <img src="../images/ingredient.png" alt="Ingredients" class="bg-image" />
+      <div class="overlay"></div>
+      <div class="content">
+        <h1>Choose Ingredients</h1>
+        <p>Select ingredients to find matching recipes instantly.</p>
+        <button class="btn" onclick="window.location.href='ingredients.html'">Choose</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© 2025 UK CookHouse — Taste of Karnataka</p>
+  </footer>
+
+  <script src="../js/home.js"></script>
+   <script type="text/javascript">(function(){d=document;s=d.createElement("script");s.src="https://sitespeak.ai/chatbots/ae0e275a-aa4b-4833-84fa-4d2a97cce5c3.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();</script>
+</body>
+
+</html>
